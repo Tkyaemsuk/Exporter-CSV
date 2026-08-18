@@ -1,0 +1,677 @@
+{
+  "type": "component",
+  "metadata": {},
+  "schema": {
+    "name": "export",
+    "friendlyName": "Export",
+    "description": "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Lock column designs in the component's Columns JSON setting without localStorage or a config table.",
+    "icon": "Download",
+    "settings": [
+      {
+        "section": true,
+        "name": "Data source",
+        "settings": [
+          {
+            "type": "select",
+            "label": "Source type",
+            "key": "sourceMode",
+            "defaultValue": "provider",
+            "options": [
+              {
+                "label": "Data Provider",
+                "value": "provider"
+              },
+              {
+                "label": "Table / View / Query",
+                "value": "datasource"
+              }
+            ]
+          },
+          {
+            "type": "dataProvider",
+            "label": "Data provider",
+            "key": "dataProvider",
+            "dependsOn": {
+              "setting": "sourceMode",
+              "value": "provider"
+            }
+          },
+          {
+            "type": "dataSource",
+            "label": "Data",
+            "key": "dataSource",
+            "dependsOn": {
+              "setting": "sourceMode",
+              "value": "datasource"
+            }
+          },
+          {
+            "type": "text",
+            "label": "Sort column",
+            "key": "sortColumn",
+            "placeholder": "None",
+            "dependsOn": {
+              "setting": "sourceMode",
+              "value": "datasource"
+            }
+          },
+          {
+            "type": "select",
+            "label": "Sort order",
+            "key": "sortOrder",
+            "defaultValue": "ascending",
+            "options": [
+              {
+                "label": "Ascending",
+                "value": "ascending"
+              },
+              {
+                "label": "Descending",
+                "value": "descending"
+              }
+            ],
+            "dependsOn": {
+              "setting": "sourceMode",
+              "value": "datasource"
+            }
+          },
+          {
+            "type": "number",
+            "label": "Page size",
+            "key": "pageSize",
+            "defaultValue": 500,
+            "info": "Rows requested per round trip when reading a Table / View / Query.",
+            "dependsOn": {
+              "setting": "sourceMode",
+              "value": "datasource"
+            }
+          },
+          {
+            "type": "number",
+            "label": "Max rows",
+            "key": "maxRows",
+            "defaultValue": 10000,
+            "info": "Safety limit for a single export."
+          },
+          {
+            "type": "boolean",
+            "label": "Load data when the screen opens",
+            "key": "fetchOnLoad",
+            "defaultValue": true,
+            "info": "Turn off to only read the data when Export is pressed.",
+            "dependsOn": {
+              "setting": "sourceMode",
+              "value": "datasource"
+            }
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Columns",
+        "settings": [
+          {
+            "type": "boolean",
+            "label": "Build columns automatically",
+            "key": "autoColumns",
+            "defaultValue": true,
+            "info": "Uses every field of the data source when no column design is supplied."
+          },
+          {
+            "type": "text",
+            "label": "Exclude fields",
+            "key": "excludeFields",
+            "placeholder": "e.g. _id, _rev, password",
+            "dependsOn": "autoColumns"
+          },
+          {
+            "type": "text",
+            "label": "Column design (JSON)",
+            "key": "columnsJson",
+            "placeholder": "[{\"field\":\"name\",\"header\":\"ชื่อ-นามสกุล\",\"width\":24},{\"field\":\"created_at\",\"header\":\"วันที่สร้าง\",\"format\":\"date\",\"datePattern\":\"DD/MM/YYYY\",\"tz\":\"+7\"}]",
+            "info": "Persistent component design. In the visual Designer, copy the JSON, paste it here, then Publish the app."
+          },
+          {
+            "type": "boolean",
+            "label": "Show Design button",
+            "key": "showDesigner",
+            "defaultValue": true,
+            "info": "Opens the column designer. Copy the finished JSON into Column design (JSON), then Publish to lock the design."
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Date and time",
+        "settings": [
+          {
+            "type": "select",
+            "label": "Time zone",
+            "key": "timezone",
+            "defaultValue": "+7",
+            "options": [
+              {
+                "label": "Thailand  UTC+07:00",
+                "value": "+7"
+              },
+              {
+                "label": "UTC",
+                "value": "utc"
+              },
+              {
+                "label": "Browser local time",
+                "value": "local"
+              },
+              {
+                "label": "Custom offset",
+                "value": "custom"
+              }
+            ]
+          },
+          {
+            "type": "number",
+            "label": "Custom offset (hours)",
+            "key": "tzOffsetHours",
+            "defaultValue": 7,
+            "dependsOn": {
+              "setting": "timezone",
+              "value": "custom"
+            }
+          },
+          {
+            "type": "select",
+            "label": "Date format",
+            "key": "dateFormat",
+            "defaultValue": "DD/MM/YYYY",
+            "options": [
+              {
+                "label": "DD/MM/YYYY",
+                "value": "DD/MM/YYYY"
+              },
+              {
+                "label": "HH:MM:SS",
+                "value": "HH:mm:ss"
+              },
+              {
+                "label": "HH:MM",
+                "value": "HH:mm"
+              },
+              {
+                "label": "DD/MM/YYYY HH:MM",
+                "value": "DD/MM/YYYY HH:mm"
+              },
+              {
+                "label": "DD/MM/YYYY HH:MM:SS",
+                "value": "DD/MM/YYYY HH:mm:ss"
+              },
+              {
+                "label": "YYYY-MM-DD",
+                "value": "YYYY-MM-DD"
+              },
+              {
+                "label": "YYYY-MM-DD HH:MM:SS",
+                "value": "YYYY-MM-DD HH:mm:ss"
+              },
+              {
+                "label": "ISO 8601",
+                "value": "iso"
+              },
+              {
+                "label": "Custom pattern",
+                "value": "custom"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "label": "Custom pattern",
+            "key": "dateFormatCustom",
+            "placeholder": "DD MMMM YYYY HH:mm",
+            "info": "Tokens: YYYY YY MMMM MMM MM M DD D dddd ddd HH H hh h mm ss SSS A a ZZ. Wrap literals in [ ].",
+            "dependsOn": {
+              "setting": "dateFormat",
+              "value": "custom"
+            }
+          },
+          {
+            "type": "boolean",
+            "label": "Detect date values automatically",
+            "key": "autoDetectDates",
+            "defaultValue": true,
+            "info": "Formats ISO date strings and date fields even when the column is not marked as a date."
+          },
+          {
+            "type": "boolean",
+            "label": "Buddhist era year (พ.ศ.)",
+            "key": "buddhistEra",
+            "defaultValue": false
+          },
+          {
+            "type": "boolean",
+            "label": "Thai month names",
+            "key": "thaiMonthNames",
+            "defaultValue": false,
+            "info": "Renders MMM / MMMM as มกราคม, ก.พ. and so on."
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Language and encoding",
+        "settings": [
+          {
+            "type": "select",
+            "label": "Interface language",
+            "key": "language",
+            "defaultValue": "th",
+            "options": [
+              {
+                "label": "ไทย",
+                "value": "th"
+              },
+              {
+                "label": "English",
+                "value": "en"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "label": "Font",
+            "key": "fontFamily",
+            "defaultValue": "Tahoma",
+            "info": "Font written into XLSX / XLS / HTML / PDF exports. Tahoma and Sarabun both render Thai correctly."
+          },
+          {
+            "type": "boolean",
+            "label": "UTF-8 BOM",
+            "key": "bom",
+            "defaultValue": true,
+            "info": "Required so Excel shows Thai text in CSV files instead of mojibake."
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "File",
+        "settings": [
+          {
+            "type": "text",
+            "label": "File name",
+            "key": "fileName",
+            "defaultValue": "export",
+            "info": "Without extension. Bindings are supported."
+          },
+          {
+            "type": "boolean",
+            "label": "Append date and time to the name",
+            "key": "appendTimestamp",
+            "defaultValue": false
+          },
+          {
+            "type": "select",
+            "label": "Export format",
+            "key": "exportFormat",
+            "defaultValue": "csv",
+            "options": [
+              {
+                "label": "CSV  (.csv)",
+                "value": "csv"
+              },
+              {
+                "label": "Excel  (.xlsx)",
+                "value": "xlsx"
+              },
+              {
+                "label": "Excel 2003 XML  (.xls)",
+                "value": "xls"
+              },
+              {
+                "label": "Web page  (.html)",
+                "value": "html"
+              },
+              {
+                "label": "PDF  (print)",
+                "value": "pdf"
+              },
+              {
+                "label": "Text  (.txt)",
+                "value": "txt"
+              },
+              {
+                "label": "JSON  (.json)",
+                "value": "json"
+              }
+            ]
+          },
+          {
+            "type": "boolean",
+            "label": "Let the user pick the format",
+            "key": "showFormatPicker",
+            "defaultValue": false,
+            "info": "Adds a format menu next to the export button."
+          },
+          {
+            "type": "select",
+            "label": "CSV delimiter",
+            "key": "delimiter",
+            "defaultValue": "comma",
+            "options": [
+              {
+                "label": "Comma  ( , )",
+                "value": "comma"
+              },
+              {
+                "label": "Semicolon  ( ; )",
+                "value": "semicolon"
+              },
+              {
+                "label": "Tab",
+                "value": "tab"
+              },
+              {
+                "label": "Pipe  ( | )",
+                "value": "pipe"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "label": "Sheet name",
+            "key": "sheetName",
+            "defaultValue": "Sheet1"
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Table style",
+        "settings": [
+          {
+            "type": "color",
+            "label": "Header background",
+            "key": "headerBg",
+            "defaultValue": "#1F6FEB"
+          },
+          {
+            "type": "color",
+            "label": "Header text",
+            "key": "headerColor",
+            "defaultValue": "#FFFFFF"
+          },
+          {
+            "type": "boolean",
+            "label": "Bold header",
+            "key": "headerBold",
+            "defaultValue": true
+          },
+          {
+            "type": "select",
+            "label": "Header alignment",
+            "key": "headerAlign",
+            "defaultValue": "center",
+            "options": [
+              {
+                "label": "Left",
+                "value": "left"
+              },
+              {
+                "label": "Center",
+                "value": "center"
+              },
+              {
+                "label": "Right",
+                "value": "right"
+              }
+            ]
+          },
+          {
+            "type": "color",
+            "label": "Cell background",
+            "key": "bodyBg",
+            "defaultValue": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "label": "Cell text",
+            "key": "bodyColor",
+            "defaultValue": "#111827"
+          },
+          {
+            "type": "boolean",
+            "label": "Striped rows",
+            "key": "stripeEnabled",
+            "defaultValue": true
+          },
+          {
+            "type": "color",
+            "label": "Stripe colour",
+            "key": "stripeBg",
+            "defaultValue": "#F3F6FA",
+            "dependsOn": "stripeEnabled"
+          },
+          {
+            "type": "color",
+            "label": "Border",
+            "key": "borderColor",
+            "defaultValue": "#D0D7DE"
+          },
+          {
+            "type": "number",
+            "label": "Font size",
+            "key": "fontSize",
+            "defaultValue": 11
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Watermark and footer",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Watermark image",
+            "key": "watermark",
+            "placeholder": "https://example.com/logo.png  or  data:image/png;base64,iVBORw0...",
+            "info": "Accepts an image URL or a Base64 data URI. Applied to XLSX, HTML and PDF exports."
+          },
+          {
+            "type": "number",
+            "label": "Watermark opacity (%)",
+            "key": "watermarkOpacity",
+            "defaultValue": 12
+          },
+          {
+            "type": "number",
+            "label": "Watermark size (%)",
+            "key": "watermarkSize",
+            "defaultValue": 55,
+            "info": "Width of the watermark relative to the page."
+          },
+          {
+            "type": "boolean",
+            "label": "Show document footer",
+            "key": "showFooter",
+            "defaultValue": true,
+            "info": "Start date at the bottom left, document code at the bottom right."
+          },
+          {
+            "type": "text",
+            "label": "Start date label",
+            "key": "startDateLabel",
+            "defaultValue": "วันที่เริ่มใช้งาน",
+            "dependsOn": "showFooter"
+          },
+          {
+            "type": "text",
+            "label": "Start date",
+            "key": "startDate",
+            "placeholder": "Leave empty to use today",
+            "info": "Any date value or free text. Dates are formatted with the settings above.",
+            "dependsOn": "showFooter"
+          },
+          {
+            "type": "text",
+            "label": "Document code label",
+            "key": "docCodeLabel",
+            "defaultValue": "รหัสเอกสาร",
+            "dependsOn": "showFooter"
+          },
+          {
+            "type": "text",
+            "label": "Document code",
+            "key": "docCode",
+            "placeholder": "e.g. FM-HR-001 Rev.01",
+            "dependsOn": "showFooter"
+          },
+          {
+            "type": "color",
+            "label": "Footer text colour",
+            "key": "footerColor",
+            "defaultValue": "#6B7280",
+            "dependsOn": "showFooter"
+          },
+          {
+            "type": "number",
+            "label": "Footer font size",
+            "key": "footerFontSize",
+            "defaultValue": 10,
+            "dependsOn": "showFooter"
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Button",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Button text",
+            "key": "buttonText",
+            "placeholder": "ส่งออกไฟล์ / Export"
+          },
+          {
+            "type": "boolean",
+            "label": "Show icon",
+            "key": "showIcon",
+            "defaultValue": true
+          },
+          {
+            "type": "select",
+            "label": "Size",
+            "key": "buttonSize",
+            "defaultValue": "M",
+            "options": [
+              {
+                "label": "Small",
+                "value": "S"
+              },
+              {
+                "label": "Medium",
+                "value": "M"
+              },
+              {
+                "label": "Large",
+                "value": "L"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "label": "Style",
+            "key": "buttonVariant",
+            "defaultValue": "solid",
+            "options": [
+              {
+                "label": "Solid",
+                "value": "solid"
+              },
+              {
+                "label": "Outline",
+                "value": "outline"
+              },
+              {
+                "label": "Ghost",
+                "value": "ghost"
+              }
+            ]
+          },
+          {
+            "type": "color",
+            "label": "Button colour",
+            "key": "buttonBg",
+            "defaultValue": "#16A34A"
+          },
+          {
+            "type": "color",
+            "label": "Button text colour",
+            "key": "buttonColor",
+            "defaultValue": "#FFFFFF"
+          },
+          {
+            "type": "number",
+            "label": "Corner radius",
+            "key": "buttonRadius",
+            "defaultValue": 6
+          },
+          {
+            "type": "boolean",
+            "label": "Full width",
+            "key": "fullWidth",
+            "defaultValue": false
+          },
+          {
+            "type": "boolean",
+            "label": "Show row count",
+            "key": "showRowCount",
+            "defaultValue": true
+          },
+          {
+            "type": "boolean",
+            "label": "Show Preview button",
+            "key": "showPreviewButton",
+            "defaultValue": false
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Events",
+        "settings": [
+          {
+            "type": "event",
+            "label": "On export",
+            "key": "onExport",
+            "context": [
+              {
+                "label": "Row count",
+                "key": "rowCount"
+              },
+              {
+                "label": "File name",
+                "key": "fileName"
+              },
+              {
+                "label": "Format",
+                "key": "format"
+              }
+            ]
+          },
+          {
+            "type": "event",
+            "label": "On error",
+            "key": "onError",
+            "context": [
+              {
+                "label": "Message",
+                "key": "message"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "hash": "6185ad1464088189baa11de746202f9c7c5dbd4d",
+  "version": "1.4.2"
+}

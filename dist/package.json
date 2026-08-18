@@ -1,0 +1,31 @@
+{
+  "name": "export",
+  "version": "1.4.2",
+  "description": "Open-source Budibase 3.4.1 export component with component-locked column design JSON",
+  "author": "Thanakrit Yaemsuk / KWTeam OFFICIAL",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "module": "dist/plugin.min.js",
+  "files": [
+    "dist",
+    "src",
+    "scripts",
+    "schema.json",
+    "README.md",
+    "SOURCE-NOTES.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "verify": "node scripts/verify.mjs",
+    "package": "npm run build && npm run verify && node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "tar": "7.5.22",
+    "terser": "5.50.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

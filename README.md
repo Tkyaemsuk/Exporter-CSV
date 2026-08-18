@@ -251,8 +251,8 @@ npm run verify
 
 ## 👨‍💻 ผู้พัฒนา
 
-1.**Thanakrit Yaemsuk** 
-2.**Thiwat Khanphachai**
+**Thanakrit Yaemsuk** <br>
+**Thiwat Khanphachai**
 
 สร้างขึ้นเพื่อช่วยให้การส่งออกข้อมูลจาก Budibase มีความยืดหยุ่น เป็นมาตรฐาน และรองรับการใช้งานภาษาไทยอย่างสมบูรณ์
 

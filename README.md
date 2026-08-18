@@ -251,8 +251,8 @@ npm run verify
 
 ## 👨‍💻 ผู้พัฒนา
 
-**Thanakrit Yaemsuk**  
-KWTeam OFFICIAL
+**Thanakrit Yaemsuk** 
+**Thiwat Khanphachai**
 
 สร้างขึ้นเพื่อช่วยให้การส่งออกข้อมูลจาก Budibase มีความยืดหยุ่น เป็นมาตรฐาน และรองรับการใช้งานภาษาไทยอย่างสมบูรณ์
 

@@ -49,15 +49,33 @@ const errors = []
 
 if (!registration) errors.push("Plugin did not register")
 if (registration?.version !== pkg.version) errors.push("Bundle version does not match package.json")
-if (registration?.schema?.schema?.name !== "export") errors.push("Component name must be export")
+if (registration?.schema?.schema?.name !== "exporter-csv") errors.push("Component name must be exporter-csv")
+if (registration?.schema?.schema?.friendlyName !== "Exporter-Csv") errors.push("Friendly name must be Exporter-Csv")
 if (schema.version !== pkg.version) errors.push("schema.json version does not match package.json")
 if (settings.find(item => item.key === "columnsJson")?.type !== "text") {
   errors.push("columnsJson must use the Budibase 3.4.1-compatible text setting")
+}
+if (settings.find(item => item.key === "showDocumentHeader")) {
+  errors.push("showDocumentHeader must be automatic and not exposed as a separate setting")
+}
+if (settings.find(item => item.key === "documentHeaderRows")) {
+  errors.push("documentHeaderRows must not be exposed as a raw JSON setting")
+}
+if (settings.find(item => item.key === "documentHeaderImage")) {
+  errors.push("documentHeaderImage must be configured in the visual designer")
+}
+if (!/parseDocumentHeaderRows|openDocumentHeaderDesigner|headerDesigner|hasDocumentHeader|mergeCell|MergeAcross/.test(code)) {
+  errors.push("Document header rendering code is missing")
+}
+if (/logoFileInput|currentHeaderConfig|headerConfig\.enabled|xlsxLogoRequiresBase64/.test(code)) {
+  errors.push("Document header image controls must be removed")
+}
+if (!/parseLockedDesign|documentHeaderRows/.test(code)) {
+  errors.push("Unified locked design support is missing")
 }
 if (/localStorage|storageTableId|\.fetchRow\(|\.saveRow\(/.test(code)) {
   errors.push("Forbidden browser/server persistence code detected")
 }
 
 if (errors.length) throw new Error(errors.join("\n"))
-console.log(`Verified Export v${pkg.version}`)
-
+console.log(`Verified Exporter-Csv v${pkg.version}`)

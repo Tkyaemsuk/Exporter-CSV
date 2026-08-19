@@ -179,16 +179,31 @@ var plugin = function(e, t, n) {
             };
         }) : [];
     }
-    function $(e) {
-        if (!e || !String(e).trim()) return null;
+    function parseLockedDesign(e) {
+        if (!e || !String(e).trim()) return {
+            columns: null,
+            documentHeaderRows: null,
+            documentHeader: null
+        };
         try {
-            const t = M(JSON.parse(e));
-            return t.length ? t : null;
+            const t = JSON.parse(e), n = Array.isArray(t) ? t : t && Array.isArray(t.columns) ? t.columns : [], a = t && !Array.isArray(t) && Array.isArray(t.documentHeaderRows) ? t.documentHeaderRows : null, o = t && !Array.isArray(t) && t.documentHeader && "object" == typeof t.documentHeader ? t.documentHeader : null, r = M(n);
+            return {
+                columns: r.length ? r : null,
+                documentHeaderRows: a,
+                documentHeader: o
+            };
         } catch (e) {
-            return null;
+            return {
+                columns: null,
+                documentHeaderRows: null,
+                documentHeader: null
+            };
         }
     }
-    function T(e) {
+    function $(e) {
+        return parseLockedDesign(e).columns;
+    }
+    function T(e, n) {
         const t = e.map(e => {
             const t = {
                 field: e.field,
@@ -200,7 +215,11 @@ var plugin = function(e, t, n) {
             e.headerBg && (t.headerBg = e.headerBg), e.headerColor && (t.headerColor = e.headerColor), 
             e.bodyBg && (t.bodyBg = e.bodyBg), e.bodyColor && (t.bodyColor = e.bodyColor), t;
         });
-        return JSON.stringify(t, null, 2);
+        return Array.isArray(n) ? JSON.stringify({
+            version: 3,
+            columns: t,
+            documentHeaderRows: n
+        }, null, 2) : JSON.stringify(t, null, 2);
     }
     function z(e, t) {
         const n = Number(e);
@@ -828,6 +847,7 @@ var plugin = function(e, t, n) {
         let n, a, o, r, l, s, i, d, c, u, p, m, f, h, g, b, v, y, x, w, C, _, F, k, S, D, M, $, T, z, N, B, Y, E, H, P, A, j, W, J, Z, X, q, G, ee, te, oe, re, le, se, ie, de, ce, ue, pe, me, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De = e[4]("designerTitle") + "", Me = e[2].length + "", $e = e[4]("rows") + "", Te = e[8].length + "", ze = e[4]("columns") + "", Ne = e[4]("addColumn") + "", Be = e[4]("fromData") + "", Ye = e[4]("copyJson") + "", Oe = e[4]("save") + "", Ee = e[4]("reset") + "", Ie = e[4]("previewTitle") + "", He = e[4]("previewNote", {
             n: e[9].length
         }) + "", Pe = e[4]("close") + "", Ae = e[4]("export") + "", je = e[6] && V(e), Ve = e[7] && R(e);
+        let headerButton, headerButtonText, headerButtonLabel = e[4]("headerDesigner") + "";
         function Re(e, t) {
             return 0 === e[0].length ? U : L;
         }
@@ -844,7 +864,7 @@ var plugin = function(e, t, n) {
                 g = t.text(ze), b = t.space(), je && je.c(), v = t.space(), y = t.element("button"), 
                 x = t.text("×"), C = t.space(), _ = t.element("div"), F = t.element("button"), k = t.text("+ "), 
                 S = t.text(Ne), D = t.space(), M = t.element("button"), $ = t.text("⟳ "), T = t.text(Be), 
-                z = t.space(), N = t.element("span"), B = t.space(), Ve && Ve.c(), Y = t.space(), 
+                z = t.space(), headerButton = t.element("button"), headerButtonText = t.text(headerButtonLabel), N = t.element("span"), B = t.space(), Ve && Ve.c(), Y = t.space(), 
                 E = t.element("button"), H = t.text(Ye), P = t.space(), A = t.element("button"), 
                 j = t.text(Oe), W = t.space(), J = t.element("button"), Z = t.text(Ee), X = t.space(), 
                 q = t.element("div"), Ue.c(), G = t.space(), ee = t.element("div"), te = t.element("div"), 
@@ -857,7 +877,7 @@ var plugin = function(e, t, n) {
                 ye = t.space(), xe = t.element("button"), we = t.text(Pe), Ce = t.space(), _e = t.element("button"), 
                 Fe = t.text(Ae), t.attr(d, "class", "ec-sub svelte-lgwuc9"), t.attr(y, "class", "ec-x svelte-lgwuc9"), 
                 t.attr(y, "title", w = e[4]("close")), t.attr(o, "class", "ec-head svelte-lgwuc9"), 
-                t.attr(F, "class", "ec-btn svelte-lgwuc9"), t.attr(M, "class", "ec-btn svelte-lgwuc9"), 
+                t.attr(F, "class", "ec-btn svelte-lgwuc9"), t.attr(M, "class", "ec-btn svelte-lgwuc9"), t.attr(headerButton, "class", "ec-btn svelte-lgwuc9"), 
                 t.attr(N, "class", "ec-spacer svelte-lgwuc9"), t.attr(E, "class", "ec-btn svelte-lgwuc9"), 
                 t.attr(A, "class", "ec-btn svelte-lgwuc9"), t.attr(J, "class", "ec-btn ec-danger svelte-lgwuc9"), 
                 t.attr(_, "class", "ec-toolbar svelte-lgwuc9"), t.attr(te, "class", "ec-preview-label svelte-lgwuc9"), 
@@ -874,7 +894,7 @@ var plugin = function(e, t, n) {
                 t.append(d, p), t.append(d, m), t.append(d, f), t.append(d, h), t.append(d, g), 
                 t.append(d, b), je && je.m(d, null), t.append(o, v), t.append(o, y), t.append(y, x), 
                 t.append(a, C), t.append(a, _), t.append(_, F), t.append(F, k), t.append(F, S), 
-                t.append(_, D), t.append(_, M), t.append(M, $), t.append(M, T), t.append(_, z), 
+                t.append(_, D), t.append(_, M), t.append(M, $), t.append(M, T), t.append(_, z), t.append(_, headerButton), t.append(headerButton, headerButtonText), 
                 t.append(_, N), t.append(_, B), Ve && Ve.m(_, null), t.append(_, Y), t.append(_, E), 
                 t.append(E, H), t.append(_, P), t.append(_, A), t.append(A, j), t.append(_, W), 
                 t.append(_, J), t.append(J, Z), t.append(a, X), t.append(a, q), Ue.m(q, null), t.append(q, G), 
@@ -885,7 +905,7 @@ var plugin = function(e, t, n) {
                 for (let e = 0; e < qe.length; e += 1) qe[e] && qe[e].m(fe, null);
                 t.append(fe, he), Ge && Ge.m(fe, null), t.append(a, ge), t.append(a, be), t.append(be, ve), 
                 t.append(be, ye), t.append(be, xe), t.append(xe, we), t.append(be, Ce), t.append(be, _e), 
-                t.append(_e, Fe), ke || (Se = [ t.listen(y, "click", e[21]), t.listen(F, "click", e[15]), t.listen(M, "click", e[22]), t.listen(E, "click", e[20]), t.listen(A, "click", e[23]), t.listen(J, "click", e[24]), t.listen(xe, "click", e[53]), t.listen(_e, "click", e[54]), t.listen(n, "click", t.self(e[55])) ], 
+                t.append(_e, Fe), ke || (Se = [ t.listen(y, "click", e[21]), t.listen(F, "click", e[15]), t.listen(M, "click", e[22]), t.listen(headerButton, "click", e[56]), t.listen(E, "click", e[20]), t.listen(A, "click", e[23]), t.listen(J, "click", e[24]), t.listen(xe, "click", e[53]), t.listen(_e, "click", e[54]), t.listen(n, "click", t.self(e[55])) ], 
                 ke = !0);
             },
             p(e, n) {
@@ -894,7 +914,7 @@ var plugin = function(e, t, n) {
                 256 & n[0] && Te !== (Te = e[8].length + "") && t.set_data(f, Te), 16 & n[0] && ze !== (ze = e[4]("columns") + "") && t.set_data(g, ze), 
                 e[6] ? je ? je.p(e, n) : (je = V(e), je.c(), je.m(d, null)) : je && (je.d(1), je = null), 
                 16 & n[0] && w !== (w = e[4]("close")) && t.attr(y, "title", w), 16 & n[0] && Ne !== (Ne = e[4]("addColumn") + "") && t.set_data(S, Ne), 
-                16 & n[0] && Be !== (Be = e[4]("fromData") + "") && t.set_data(T, Be), e[7] ? Ve ? Ve.p(e, n) : (Ve = R(e), 
+                16 & n[0] && Be !== (Be = e[4]("fromData") + "") && t.set_data(T, Be), 16 & n[0] && headerButtonLabel !== (headerButtonLabel = e[4]("headerDesigner") + "") && t.set_data(headerButtonText, headerButtonLabel), e[7] ? Ve ? Ve.p(e, n) : (Ve = R(e), 
                 Ve.c(), Ve.m(_, Y)) : Ve && (Ve.d(1), Ve = null), 16 & n[0] && Ye !== (Ye = e[4]("copyJson") + "") && t.set_data(H, Ye), 
                 16 & n[0] && Oe !== (Oe = e[4]("save") + "") && t.set_data(j, Oe), 16 & n[0] && Ee !== (Ee = e[4]("reset") + "") && t.set_data(Z, Ee), 
                 Le === (Le = Re(e)) && Ue ? Ue.p(e, n) : (Ue.d(1), Ue = Le(e), Ue && (Ue.c(), Ue.m(q, G))), 
@@ -1025,14 +1045,7 @@ var plugin = function(e, t, n) {
         } ], b, v, function() {
             const e = k();
             e.header = u("columns") + " " + (s.length + 1), v([ ...s, e ]);
-        }, y, x, w, _, function() {
-            const e = T(s), t = () => b(u("copied"));
-            try {
-                navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(e).then(t, () => F(e, t)) : F(e, t);
-            } catch (n) {
-                F(e, t);
-            }
-        }, () => f("close"), () => f("regenerate"), () => {
+        }, y, x, w, _, () => f("save"), () => f("close"), () => f("regenerate"), () => {
             f("save"), b(u("saved"));
         }, () => {
             f("reset"), b(u("cleared"));
@@ -1066,7 +1079,7 @@ var plugin = function(e, t, n) {
             o(0, t[n].bodyColor = a.target.value, s), v(s);
         }, (e, t, n) => {
             o(0, t[n].bodyBg = "", s), o(0, t[n].bodyColor = "", s), v(s);
-        }, e => w(e.id, -1), e => w(e.id, 1), e => x(e.id), e => y(e.id), () => f("close"), () => f("export"), () => f("close") ];
+        }, e => w(e.id, -1), e => w(e.id, 1), e => x(e.id), e => y(e.id), () => f("close"), () => f("export"), () => f("close"), () => f("headerdesign") ];
     }
     Y('.ec-overlay.svelte-lgwuc9.svelte-lgwuc9{position:fixed;inset:0;background:rgba(15, 23, 42, 0.45);display:flex;align-items:center;justify-content:center;z-index:999999;padding:24px;font-family:"Sarabun", "Noto Sans Thai", Tahoma, system-ui, sans-serif}.ec-modal.svelte-lgwuc9.svelte-lgwuc9{background:#fff;color:#111827;width:min(1240px, 96vw);max-height:88vh;border-radius:10px;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0, 0, 0, 0.3);overflow:hidden}.ec-head.svelte-lgwuc9.svelte-lgwuc9{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e5e7eb;background:linear-gradient(#f9fafb, #f1f5f9)}.ec-sub.svelte-lgwuc9.svelte-lgwuc9{display:block;font-size:12px;color:#6b7280;margin-top:2px}.ec-x.svelte-lgwuc9.svelte-lgwuc9{border:none;background:transparent;font-size:22px;line-height:1;cursor:pointer;color:#6b7280;padding:2px 8px;border-radius:6px}.ec-x.svelte-lgwuc9.svelte-lgwuc9:hover{background:#e5e7eb;color:#111827}.ec-toolbar.svelte-lgwuc9.svelte-lgwuc9,.ec-foot.svelte-lgwuc9.svelte-lgwuc9{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fbfdff;border-bottom:1px solid #eef2f7;flex-wrap:wrap}.ec-foot.svelte-lgwuc9.svelte-lgwuc9{border-bottom:none;border-top:1px solid #e5e7eb;background:#f9fafb}.ec-spacer.svelte-lgwuc9.svelte-lgwuc9{flex:1}.ec-toast.svelte-lgwuc9.svelte-lgwuc9{font-size:12px;color:#15803d;font-weight:600}.ec-btn.svelte-lgwuc9.svelte-lgwuc9{border:1px solid #d1d5db;background:#fff;color:#1f2937;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}.ec-btn.svelte-lgwuc9.svelte-lgwuc9:hover{background:#f3f4f6}.ec-primary.svelte-lgwuc9.svelte-lgwuc9{background:#16a34a;border-color:#16a34a;color:#fff}.ec-primary.svelte-lgwuc9.svelte-lgwuc9:hover{background:#15803d}.ec-danger.svelte-lgwuc9.svelte-lgwuc9{color:#dc2626}.ec-danger.svelte-lgwuc9.svelte-lgwuc9:hover{background:#fee2e2}.ec-body.svelte-lgwuc9.svelte-lgwuc9{padding:12px 16px 16px;overflow:auto}.ec-grid.svelte-lgwuc9.svelte-lgwuc9{display:grid;grid-template-columns:28px 44px minmax(120px, 1.3fr) minmax(110px, 1fr) 92px minmax(120px, 1fr) 96px 62px 68px 96px 96px 108px;gap:6px;align-items:center}.ec-grid-head.svelte-lgwuc9.svelte-lgwuc9{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;padding:4px 0 6px;position:sticky;top:0;background:#fff;z-index:2}.ec-grid-row.svelte-lgwuc9.svelte-lgwuc9{padding:3px 0}.ec-letter.svelte-lgwuc9.svelte-lgwuc9{text-align:center;font-weight:700;color:#2563eb;font-size:11px}.ec-check.svelte-lgwuc9.svelte-lgwuc9{justify-self:center;width:15px;height:15px;cursor:pointer}.ec-input.svelte-lgwuc9.svelte-lgwuc9{width:100%;box-sizing:border-box;padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;background:#fff;color:#111827;font-family:inherit}.ec-input.svelte-lgwuc9.svelte-lgwuc9:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37, 99, 235, 0.15)}.ec-narrow.svelte-lgwuc9.svelte-lgwuc9{text-align:center}.ec-colors.svelte-lgwuc9.svelte-lgwuc9,.ec-ops.svelte-lgwuc9.svelte-lgwuc9{display:flex;gap:2px;align-items:center;justify-content:center}.ec-colors.svelte-lgwuc9 input[type="color"].svelte-lgwuc9{width:26px;height:24px;padding:0;border:1px solid #d1d5db;border-radius:4px;background:none;cursor:pointer}.ec-mini.svelte-lgwuc9.svelte-lgwuc9{border:1px solid #e5e7eb;background:#f9fafb;border-radius:4px;width:23px;height:23px;cursor:pointer;font-size:10px;color:#374151;padding:0;line-height:1}.ec-mini.svelte-lgwuc9.svelte-lgwuc9:hover{background:#eef2f7}.ec-empty.svelte-lgwuc9.svelte-lgwuc9{padding:22px;text-align:center;color:#6b7280;border:1px dashed #d1d5db;border-radius:8px;margin:8px 0;font-size:13px}.ec-preview.svelte-lgwuc9.svelte-lgwuc9{margin-top:16px}.ec-preview-label.svelte-lgwuc9.svelte-lgwuc9{font-size:12px;color:#6b7280;margin-bottom:6px}.ec-table-wrap.svelte-lgwuc9.svelte-lgwuc9{overflow:auto;border:1px solid #cbd5e1;border-radius:8px;max-height:300px}.ec-table.svelte-lgwuc9.svelte-lgwuc9{border-collapse:collapse;font-size:12px;min-width:100%}.ec-table.svelte-lgwuc9 th.svelte-lgwuc9,.ec-table.svelte-lgwuc9 td.svelte-lgwuc9{border:1px solid #d7dde5;padding:5px 9px;white-space:nowrap;text-align:left}.ec-table.svelte-lgwuc9 thead th.svelte-lgwuc9{position:sticky;top:0;z-index:1;font-weight:700}.ec-norows.svelte-lgwuc9.svelte-lgwuc9{color:#9ca3af;text-align:center;font-style:italic}');
     class se extends t.SvelteComponent {
@@ -1098,15 +1111,17 @@ var plugin = function(e, t, n) {
             error: "เกิดข้อผิดพลาด",
             format: "รูปแบบไฟล์",
             designerTitle: "ออกแบบคอลัมน์",
+            headerDesigner: "ออกแบบหัวเอกสาร",
+            headerDesignApplied: "ใช้ดีไซน์หัวเอกสารแล้ว และคัดลอกค่าล็อกไว้ให้แล้ว",
             addColumn: "เพิ่มคอลัมน์",
             fromData: "สร้างจากข้อมูล",
             reset: "ล้างค่า",
             save: "คัดลอกเพื่อล็อกดีไซน์",
             copyJson: "คัดลอก JSON",
-            copied: "คัดลอกแล้ว ให้วางในช่อง Column design (JSON) แล้วกด Publish",
-            saved: "คัดลอกแล้ว ให้วางในช่อง Column design (JSON) แล้วกด Publish เพื่อล็อกดีไซน์",
+            copied: "คัดลอกแล้ว ให้วางในช่อง Locked design data แล้วกด Publish",
+            saved: "คัดลอกแล้ว ให้วางในช่อง Locked design data แล้วกด Publish เพื่อล็อกดีไซน์",
             cleared: "คืนค่าดีไซน์แล้ว",
-            localOverride: "ตัวอย่างดีไซน์นี้ยังไม่ถูกล็อก กรุณาคัดลอก JSON ไปวางใน Component Settings",
+            localOverride: "ตัวอย่างดีไซน์นี้ยังไม่ถูกล็อก กรุณาวางค่าที่คัดลอกใน Locked design data แล้วกด Publish",
             header: "หัวคอลัมน์",
             field: "ฟิลด์ข้อมูล",
             type: "ชนิดข้อมูล",
@@ -1150,15 +1165,17 @@ var plugin = function(e, t, n) {
             error: "Error",
             format: "Format",
             designerTitle: "Column designer",
+            headerDesigner: "Document header",
+            headerDesignApplied: "Document header applied and the locked design value was copied",
             addColumn: "Add column",
             fromData: "From data",
             reset: "Reset",
             save: "Copy to lock design",
             copyJson: "Copy JSON",
-            copied: "Copied. Paste it into Column design (JSON), then Publish.",
-            saved: "Copied. Paste it into Column design (JSON), then Publish to lock the design.",
+            copied: "Copied. Paste it into Locked design data, then Publish.",
+            saved: "Copied. Paste it into Locked design data, then Publish to lock the design.",
             cleared: "Design restored",
-            localOverride: "This design preview is not locked yet. Copy its JSON into Component Settings.",
+            localOverride: "This design preview is not locked yet. Paste the copied value into Locked design data and Publish.",
             header: "Header",
             field: "Field",
             type: "Type",
@@ -1342,6 +1359,195 @@ var plugin = function(e, t, n) {
             r > n && (n = r);
         }
         return Math.max(8, Math.min(60, n + 2));
+    }
+    function parseDocumentHeaderRows(e, t) {
+        const n = Math.max(1, Number(t) || 1);
+        if (null == e || "" === String(e).trim()) return [];
+        let a = e;
+        if ("string" == typeof e) try {
+            a = JSON.parse(e);
+        } catch (e) {
+            throw new Error("Document header rows JSON is invalid: " + (e && e.message || String(e)));
+        }
+        if (!Array.isArray(a)) throw new Error("Document header rows must be a JSON array");
+        return a.slice(0, 30).map(e => {
+            const t = Array.isArray(e) ? e : e && Array.isArray(e.cells) ? e.cells : [], a = [];
+            let o = 0;
+            for (let e = 0; e < t.length && o < n; e++) {
+                const r = "string" == typeof t[e] || "number" == typeof t[e] ? {
+                    text: String(t[e])
+                } : t[e] || {}, l = Math.max(1, Math.min(n - o, parseInt(r.colspan || r.merge || 1, 10) || 1));
+                a.push({
+                    text: null == r.text ? "" : String(r.text),
+                    colspan: l,
+                    background: r.background || r.bg || "",
+                    color: r.color || r.textColor || "",
+                    align: -1 !== [ "left", "center", "right" ].indexOf(r.align) ? r.align : "left",
+                    bold: !1 !== r.bold,
+                    italic: !0 === r.italic,
+                    fontSize: Math.max(6, Math.min(72, Number(r.fontSize) || 11)),
+                    border: !1 !== r.border
+                }), o += l;
+            }
+            return {
+                height: Math.max(12, Math.min(120, Number(e && e.height) || 24)),
+                cells: a
+            };
+        }).filter(e => e.cells.length);
+    }
+    function documentHeaderCellStyle(e) {
+        const t = [];
+        return e.background && t.push("background:" + ve(e.background, "transparent")), e.color && t.push("color:" + ve(e.color, "#111827")), 
+        t.push("text-align:" + (e.align || "left")), t.push("font-weight:" + (e.bold ? "700" : "400")), 
+        e.italic && t.push("font-style:italic"), t.push("font-size:" + (Number(e.fontSize) || 11) + "pt"), 
+        !1 === e.border && t.push("border-color:transparent"), t.join(";");
+    }
+    function openDocumentHeaderDesigner(e) {
+        const t = "th" === e.language, n = Math.max(1, Number(e.columnCount) || 1), a = e.rows && e.rows.length ? parseDocumentHeaderRows(e.rows, n) : [ {
+            height: 32,
+            cells: [ {
+                text: t ? "ชื่อเอกสาร" : "Document title",
+                colspan: n,
+                background: "#1F6FEB",
+                color: "#FFFFFF",
+                align: "center",
+                bold: !0,
+                italic: !1,
+                fontSize: 16,
+                border: !0
+            } ]
+        } ];
+        let o = a;
+        const r = document.createElement("div");
+        r.className = "ec-hd-overlay", r.innerHTML = '<div class="ec-hd-modal" role="dialog" aria-modal="true"><div class="ec-hd-head"><div><strong></strong><span></span></div><button type="button" class="ec-hd-close">×</button></div><div class="ec-hd-toolbar"><button type="button" class="ec-hd-btn ec-hd-add-row"></button><span class="ec-hd-help"></span></div><div class="ec-hd-body"><div class="ec-hd-editor"></div><div class="ec-hd-preview-title"></div><div class="ec-hd-preview"></div></div><div class="ec-hd-foot"><button type="button" class="ec-hd-btn ec-hd-cancel"></button><button type="button" class="ec-hd-btn ec-hd-primary ec-hd-apply"></button></div></div>';
+        const l = document.createElement("style");
+        l.textContent = ".ec-hd-overlay{position:fixed;inset:0;z-index:1000001;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:18px;font-family:Sarabun,Tahoma,sans-serif}.ec-hd-modal{width:min(1180px,97vw);max-height:94vh;background:#fff;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;color:#111827}.ec-hd-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#f8fafc;border-bottom:1px solid #e5e7eb}.ec-hd-head span{display:block;font-size:12px;color:#64748b;margin-top:3px}.ec-hd-close{border:0;background:transparent;font-size:24px;cursor:pointer;color:#64748b}.ec-hd-toolbar,.ec-hd-foot{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid #e5e7eb}.ec-hd-foot{justify-content:flex-end;border-top:1px solid #e5e7eb;border-bottom:0}.ec-hd-help{font-size:12px;color:#64748b}.ec-hd-body{padding:12px 16px;overflow:auto}.ec-hd-row{border:1px solid #dbe2ea;border-radius:8px;margin-bottom:10px;background:#f8fafc}.ec-hd-rowbar{display:flex;align-items:center;gap:8px;padding:7px 9px;border-bottom:1px solid #e5e7eb}.ec-hd-rowbar strong{min-width:62px}.ec-hd-rowbar label{font-size:11px;color:#475569}.ec-hd-rowbar input{width:64px}.ec-hd-cells{padding:8px;display:grid;gap:7px}.ec-hd-cell{display:grid;grid-template-columns:minmax(170px,2fr) 72px 72px 72px 92px 70px auto;gap:6px;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:7px}.ec-hd-cell textarea,.ec-hd-cell input[type=number],.ec-hd-cell select{box-sizing:border-box;width:100%;min-height:30px;border:1px solid #cbd5e1;border-radius:5px;padding:4px 6px;font:inherit;font-size:12px}.ec-hd-cell textarea{resize:vertical}.ec-hd-color{display:flex;gap:3px;align-items:center}.ec-hd-color input[type=color]{width:32px;height:30px;padding:0;border:1px solid #cbd5e1;border-radius:5px}.ec-hd-flags{display:flex;gap:6px;align-items:center;font-size:11px;white-space:nowrap}.ec-hd-btn{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer}.ec-hd-btn:hover{background:#f1f5f9}.ec-hd-primary{background:#16a34a;border-color:#16a34a;color:#fff}.ec-hd-danger{color:#dc2626}.ec-hd-preview-title{font-size:12px;font-weight:700;color:#475569;margin:14px 0 6px}.ec-hd-preview{overflow:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:8px}.ec-hd-preview table{border-collapse:collapse;width:100%;table-layout:fixed}.ec-hd-preview td{padding:6px 8px;border:1px solid #d7dde5;white-space:pre-wrap;overflow-wrap:anywhere}@media(max-width:900px){.ec-hd-cell{grid-template-columns:1fr 70px 70px}.ec-hd-flags{grid-column:1/-1}}";
+        document.head.appendChild(l), document.body.appendChild(r);
+        const s = e => r.querySelector(e), i = s(".ec-hd-head strong"), d = s(".ec-hd-head span"), c = s(".ec-hd-add-row"), u = s(".ec-hd-help"), p = s(".ec-hd-preview-title"), m = s(".ec-hd-cancel"), f = s(".ec-hd-apply");
+        i.textContent = t ? "ออกแบบส่วนหัวเอกสาร" : "Document header designer", d.textContent = (t ? "จำนวนคอลัมน์ที่ใช้งาน: " : "Active columns: ") + n, c.textContent = t ? "+ เพิ่มแถว" : "+ Add row", u.textContent = t ? "เพิ่มเซลล์และกำหนดจำนวนคอลัมน์ที่ต้องการ Merge" : "Add cells and choose how many columns each cell spans", p.textContent = t ? "ตัวอย่างส่วนหัวเอกสาร" : "Document header preview", m.textContent = t ? "ยกเลิก" : "Cancel", f.textContent = t ? "ใช้ดีไซน์และคัดลอกค่าล็อก" : "Apply design and copy locked value";
+        function h(e, t, n) {
+            const a = document.createElement("input");
+            return a.type = "color", a.value = /^#[0-9a-f]{6}$/i.test(e) ? e : t, a.title = n, a;
+        }
+        function g() {
+            const e = s(".ec-hd-editor"), a = s(".ec-hd-preview");
+            e.innerHTML = "", a.innerHTML = "";
+            o.forEach((a, r) => {
+                const l = document.createElement("div");
+                l.className = "ec-hd-row";
+                const s = document.createElement("div");
+                s.className = "ec-hd-rowbar";
+                const i = document.createElement("strong");
+                i.textContent = (t ? "แถว " : "Row ") + (r + 1);
+                const d = document.createElement("label");
+                d.textContent = t ? "ความสูง" : "Height";
+                const c = document.createElement("input");
+                c.type = "number", c.min = "12", c.max = "120", c.value = a.height, c.addEventListener("input", () => {
+                    a.height = Math.max(12, Math.min(120, Number(c.value) || 24)), v();
+                });
+                const u = document.createElement("button");
+                u.className = "ec-hd-btn", u.textContent = t ? "+ เพิ่มช่อง" : "+ Add cell", u.addEventListener("click", () => {
+                    const e = a.cells.reduce((e, t) => e + (Number(t.colspan) || 1), 0);
+                    e < n && (a.cells.push({
+                        text: "",
+                        colspan: 1,
+                        background: "#FFFFFF",
+                        color: "#111827",
+                        align: "left",
+                        bold: !1,
+                        italic: !1,
+                        fontSize: 11,
+                        border: !0
+                    }), g());
+                });
+                const p = document.createElement("button");
+                p.className = "ec-hd-btn ec-hd-danger", p.textContent = t ? "ลบแถว" : "Delete row", p.addEventListener("click", () => {
+                    o.splice(r, 1), g();
+                }), s.append(i, d, c, u, p), l.appendChild(s);
+                const m = document.createElement("div");
+                m.className = "ec-hd-cells", a.cells.forEach((e, a) => {
+                    const l = document.createElement("div");
+                    l.className = "ec-hd-cell";
+                    const s = document.createElement("textarea");
+                    s.rows = 2, s.value = e.text || "", s.placeholder = t ? "ข้อความส่วนหัว" : "Header text", s.addEventListener("input", () => {
+                        e.text = s.value, v();
+                    });
+                    const i = document.createElement("input");
+                    i.type = "number", i.min = "1", i.max = String(n), i.value = e.colspan || 1, i.title = t ? "จำนวนคอลัมน์ที่ Merge" : "Merged column count", i.addEventListener("input", () => {
+                        e.colspan = Math.max(1, Math.min(n, Number(i.value) || 1)), v();
+                    });
+                    const d = h(e.background, "#FFFFFF", t ? "สีพื้นหลัง" : "Background"), c = h(e.color, "#111827", t ? "สีข้อความ" : "Text colour");
+                    d.addEventListener("input", () => {
+                        e.background = d.value, v();
+                    }), c.addEventListener("input", () => {
+                        e.color = c.value, v();
+                    });
+                    const u = document.createElement("select");
+                    [ [ "left", t ? "ซ้าย" : "Left" ], [ "center", t ? "กลาง" : "Center" ], [ "right", t ? "ขวา" : "Right" ] ].forEach(t => {
+                        const n = document.createElement("option");
+                        n.value = t[0], n.textContent = t[1], u.appendChild(n);
+                    }), u.value = e.align || "left", u.addEventListener("change", () => {
+                        e.align = u.value, v();
+                    });
+                    const p = document.createElement("input");
+                    p.type = "number", p.min = "6", p.max = "72", p.value = e.fontSize || 11, p.title = t ? "ขนาดตัวอักษร" : "Font size", p.addEventListener("input", () => {
+                        e.fontSize = Math.max(6, Math.min(72, Number(p.value) || 11)), v();
+                    });
+                    const f = document.createElement("div");
+                    f.className = "ec-hd-flags";
+                    [ [ "bold", t ? "หนา" : "Bold" ], [ "italic", t ? "เอียง" : "Italic" ], [ "border", t ? "เส้นขอบ" : "Border" ] ].forEach(t => {
+                        const n = document.createElement("label"), a = document.createElement("input");
+                        a.type = "checkbox", a.checked = !1 !== e[t[0]], "italic" === t[0] && (a.checked = !0 === e.italic), a.addEventListener("change", () => {
+                            e[t[0]] = a.checked, v();
+                        }), n.append(a, document.createTextNode(t[1])), f.appendChild(n);
+                    });
+                    const b = document.createElement("button");
+                    b.className = "ec-hd-btn ec-hd-danger", b.textContent = "×", b.title = t ? "ลบช่อง" : "Delete cell", b.addEventListener("click", () => {
+                        e && (o[r].cells.splice(a, 1), g());
+                    });
+                    const y = document.createElement("div");
+                    y.className = "ec-hd-color", y.appendChild(d);
+                    const x = document.createElement("div");
+                    x.className = "ec-hd-color", x.appendChild(c), l.append(s, i, y, x, u, p, f, b), m.appendChild(l);
+                }), l.appendChild(m), e.appendChild(l);
+            }), v();
+        }
+        function v() {
+            const e = s(".ec-hd-preview");
+            e.innerHTML = "";
+            const t = document.createElement("table"), a = document.createElement("tbody");
+            o.forEach(e => {
+                const t = document.createElement("tr");
+                t.style.height = (e.height || 24) + "px", e.cells.forEach(e => {
+                    const a = document.createElement("td");
+                    a.textContent = e.text || "", a.colSpan = Math.max(1, Math.min(n, Number(e.colspan) || 1)), a.style.cssText = documentHeaderCellStyle(e), t.appendChild(a);
+                }), a.appendChild(t);
+            }), t.appendChild(a), e.appendChild(t);
+        }
+        function b() {
+            r.remove(), l.remove();
+        }
+        c.addEventListener("click", () => {
+            o.push({
+                height: 24,
+                cells: [ {
+                    text: "",
+                    colspan: n,
+                    background: "#FFFFFF",
+                    color: "#111827",
+                    align: "left",
+                    bold: !1,
+                    italic: !1,
+                    fontSize: 11,
+                    border: !0
+                } ]
+            }), g();
+        }), s(".ec-hd-close").addEventListener("click", b), m.addEventListener("click", b), r.addEventListener("click", e => {
+            e.target === r && b();
+        }), f.addEventListener("click", () => {
+            const t = parseDocumentHeaderRows(o, n);
+            "function" == typeof e.onApply && e.onApply(t), b();
+        }), g();
     }
     var Se = Uint8Array, De = Uint16Array, Me = Int32Array, $e = new Se([ 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0 ]), Te = new Se([ 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 0, 0 ]), ze = new Se([ 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 ]), Ne = function(e, t) {
         for (var n = new De(31), a = 0; a < 31; ++a) n[a] = t += 1 << e[a - 1];
@@ -1792,17 +1998,48 @@ var plugin = function(e, t, n) {
                 vertical: "center"
             });
         }
-        const D = l.map((t, n) => t.width > 0 ? t.width : ke(e, n)), M = D.length ? "<cols>" + D.map((e, t) => '<col min="' + (t + 1) + '" max="' + (t + 1) + '" width="' + e + '" customWidth="1"/>').join("") + "</cols>" : "", $ = [];
-        $.push('<row r="1" ht="22" customHeight="1">' + e.header.map((e, t) => '<c r="' + xt(t) + '1" s="' + (_[t] ? _[t].header : 0) + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e) + "</t></is></c>").join("") + "</row>"), 
+        const D = l.map((t, n) => t.width > 0 ? t.width : ke(e, n)), M = D.length ? "<cols>" + D.map((e, t) => '<col min="' + (t + 1) + '" max="' + (t + 1) + '" width="' + e + '" customWidth="1"/>').join("") + "</cols>" : "", $ = [], z = [], documentHeader = n.documentHeader || null, documentRows = documentHeader && Array.isArray(documentHeader.rows) ? documentHeader.rows : [], documentImage = documentHeader && documentHeader.image && documentHeader.image.bytes ? documentHeader.image : null;
+        let currentRow = 1;
+        if (documentImage) {
+            const e = Math.max(36, Math.min(220, Math.round((Number(documentHeader.imageWidth) || 120) * (documentImage.height && documentImage.width ? documentImage.height / documentImage.width : .5) * .75) + Math.round((Number(documentHeader.imageGap) || 0) * .75) + 8));
+            $.push('<row r="' + currentRow + '" ht="' + e + '" customHeight="1"><c r="A' + currentRow + '"/></row>'), 
+            s > 1 && z.push('<mergeCell ref="A' + currentRow + ":" + xt(s - 1) + currentRow + '"/>'), 
+            currentRow++;
+        }
+        documentRows.forEach(e => {
+            let t = 0;
+            const n = [];
+            e.cells.forEach(e => {
+                if (t >= s) return;
+                const a = Math.max(1, Math.min(s - t, Number(e.colspan) || 1)), headerFontId = h.add(Ct({
+                    size: Number(e.fontSize) || r,
+                    name: o,
+                    color: we(e.color) || u,
+                    bold: !!e.bold,
+                    italic: !!e.italic
+                })), l = g.add(_t(we(e.background))), i = C({
+                    fontId: headerFontId,
+                    fillId: l,
+                    borderId: !1 === e.border ? 0 : 1,
+                    align: e.align || "left",
+                    vertical: "center",
+                    wrap: !0
+                }), d = xt(t) + currentRow;
+                n.push('<c r="' + d + '" s="' + i + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e.text) + "</t></is></c>"), 
+                a > 1 && z.push('<mergeCell ref="' + d + ":" + xt(t + a - 1) + currentRow + '"/>'), t += a;
+            }), $.push('<row r="' + currentRow + '" ht="' + (Number(e.height) || 24) + '" customHeight="1">' + n.join("") + "</row>"), 
+            currentRow++;
+        });
+        const tableHeaderRow = currentRow;
+        $.push('<row r="' + tableHeaderRow + '" ht="22" customHeight="1">' + e.header.map((e, t) => '<c r="' + xt(t) + tableHeaderRow + '" s="' + (_[t] ? _[t].header : 0) + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e) + "</t></is></c>").join("") + "</row>"), 
         e.body.forEach((e, t) => {
-            const n = t + 2, o = a.stripeEnabled && t % 2 == 1, r = e.map((e, t) => {
+            const n = tableHeaderRow + t + 1, o = a.stripeEnabled && t % 2 == 1, r = e.map((e, t) => {
                 const a = _[t], r = a ? o ? a.stripe : a.body : 0, l = xt(t) + n;
                 return null != e.number && isFinite(e.number) ? '<c r="' + l + '" s="' + r + '"><v>' + e.number + "</v></c>" : e.text ? '<c r="' + l + '" s="' + r + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e.text) + "</t></is></c>" : '<c r="' + l + '" s="' + r + '"/>';
             }).join("");
             $.push('<row r="' + n + '">' + r + "</row>");
         });
-        let T = e.body.length + 1;
-        const z = [];
+        let T = tableHeaderRow + e.body.length;
         if (F && (F.startDate || F.docCode)) {
             T += 2;
             const e = [];
@@ -1810,19 +2047,41 @@ var plugin = function(e, t, n) {
             s > 1 && e.push('<c r="' + xt(s - 1) + T + '" s="' + S + '" t="inlineStr"><is><t xml:space="preserve">' + xe(F.docCode || "") + "</t></is></c>"), 
             $.push('<row r="' + T + '">' + e.join("") + "</row>");
         }
-        const N = n.watermark && n.watermark.bytes ? n.watermark : null, B = vt + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:' + xt(s - 1) + Math.max(T, 1) + '"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' + M + "<sheetData>" + $.join("") + "</sheetData>" + (e.body.length ? '<autoFilter ref="A1:' + xt(s - 1) + '1"/>' : "") + (z.length ? '<mergeCells count="' + z.length + '">' + z.join("") + "</mergeCells>" : "") + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>' + (N ? '<drawing r:id="rId1"/>' : "") + "</worksheet>", Y = vt + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + (v.length ? '<numFmts count="' + v.length + '">' + v.join("") + "</numFmts>" : "") + '<fonts count="' + h.items.length + '">' + h.items.join("") + '</fonts><fills count="' + g.items.length + '">' + g.items.join("") + '</fills><borders count="' + b.items.length + '">' + b.items.join("") + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + x.items.length + '">' + x.items.join("") + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>', O = vt + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' + xe(Fe(n.sheetName)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>', E = {
+        const N = n.watermark && n.watermark.bytes ? n.watermark : null, hasDrawing = !!(N || documentImage), nextDataRow = tableHeaderRow + 1, B = vt + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:' + xt(s - 1) + Math.max(T, 1) + '"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="' + tableHeaderRow + '" topLeftCell="A' + nextDataRow + '" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A' + nextDataRow + '" sqref="A' + nextDataRow + '"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' + M + "<sheetData>" + $.join("") + "</sheetData>" + (e.body.length ? '<autoFilter ref="A' + tableHeaderRow + ':' + xt(s - 1) + tableHeaderRow + '"/>' : "") + (z.length ? '<mergeCells count="' + z.length + '">' + z.join("") + "</mergeCells>" : "") + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>' + (hasDrawing ? '<drawing r:id="rId1"/>' : "") + "</worksheet>", Y = vt + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + (v.length ? '<numFmts count="' + v.length + '">' + v.join("") + "</numFmts>" : "") + '<fonts count="' + h.items.length + '">' + h.items.join("") + '</fonts><fills count="' + g.items.length + '">' + g.items.join("") + '</fills><borders count="' + b.items.length + '">' + b.items.join("") + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + x.items.length + '">' + x.items.join("") + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>', O = vt + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' + xe(Fe(n.sheetName)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>', E = {
             "_rels/.rels": ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'),
             "xl/workbook.xml": ft(O),
             "xl/_rels/workbook.xml.rels": ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
             "xl/styles.xml": ft(Y),
             "xl/worksheets/sheet1.xml": ft(B)
         }, I = [ '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>', '<Default Extension="xml" ContentType="application/xml"/>', '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>', '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>', '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' ];
-        if (N) {
-            const e = "jpg" === N.ext ? "jpeg" : N.ext || "png", t = "jpeg" === e ? "image/jpeg" : "gif" === e ? "image/gif" : "image/png", n = D.reduce((e, t) => e + 7 * t + 5, 0) || 800, a = (Number(N.size) > 0 ? Number(N.size) : 55) / 100, o = Math.max(120, Math.round(n * a)), r = N.width && N.height ? N.height / N.width : 1, l = Math.round(o * r), s = o * yt, i = l * yt, d = Math.max(0, Math.round((n - o) / 2)) * yt, c = Math.round(.35 * l) * yt, u = Number(N.opacity), p = 1e3 * Math.max(0, Math.min(100, isNaN(u) ? 12 : u));
-            E["xl/media/image1." + e] = N.bytes, E["xl/drawings/drawing1.xml"] = ft(vt + '<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><xdr:absoluteAnchor><xdr:pos x="' + d + '" y="' + c + '"/><xdr:ext cx="' + s + '" cy="' + i + '"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="1" name="Watermark"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="rId1"><a:alphaModFix amt="' + p + '"/></a:blip><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + s + '" cy="' + i + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:absoluteAnchor></xdr:wsDr>'), 
-            E["xl/drawings/_rels/drawing1.xml.rels"] = ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.' + e + '"/></Relationships>'), 
+        if (hasDrawing) {
+            const totalWidth = D.reduce((e, t) => e + 7 * t + 5, 0) || 800, pictures = [], relationships = [], extensions = {};
+            let pictureId = 1;
+            const addPicture = (e, t, n, a, o, r) => {
+                const l = "jpg" === e.ext ? "jpeg" : e.ext || "png", s = "jpeg" === l ? "image/jpeg" : "gif" === l ? "image/gif" : "image/png", i = "image" + pictureId + "." + l, d = "rId" + pictureId, c = pictureId;
+                E["xl/media/" + i] = e.bytes, relationships.push('<Relationship Id="' + d + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/' + i + '"/>'), 
+                extensions[l] = s, pictures.push('<xdr:absoluteAnchor><xdr:pos x="' + t + '" y="' + n + '"/><xdr:ext cx="' + a + '" cy="' + o + '"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="' + c + '" name="' + xe(r.name) + '"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="' + d + '">' + (r.alpha ? '<a:alphaModFix amt="' + r.alpha + '"/>' : "") + '</a:blip><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + a + '" cy="' + o + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:absoluteAnchor>'), 
+                pictureId++;
+            };
+            if (documentImage) {
+                const e = Math.max(32, Math.min(totalWidth, Number(documentHeader.imageWidth) || 120)), t = documentImage.width && documentImage.height ? documentImage.height / documentImage.width : .5, n = Math.max(20, Math.round(e * t)), a = "right" === documentHeader.imagePosition ? totalWidth - e : "center" === documentHeader.imagePosition ? Math.round((totalWidth - e) / 2) : 0;
+                addPicture(documentImage, Math.max(0, a) * yt, 4 * yt, e * yt, n * yt, {
+                    name: "Document Header",
+                    alpha: null
+                });
+            }
+            if (N) {
+                const e = (Number(N.size) > 0 ? Number(N.size) : 55) / 100, t = Math.max(120, Math.round(totalWidth * e)), n = N.width && N.height ? N.height / N.width : 1, a = Math.round(t * n), o = Math.max(0, Math.round((totalWidth - t) / 2)), r = Math.round(.35 * a), l = Number(N.opacity), s = 1e3 * Math.max(0, Math.min(100, isNaN(l) ? 12 : l));
+                addPicture(N, o * yt, r * yt, t * yt, a * yt, {
+                    name: "Watermark",
+                    alpha: s
+                });
+            }
+            E["xl/drawings/drawing1.xml"] = ft(vt + '<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/spreadsheetml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' + pictures.join("") + "</xdr:wsDr>"), 
+            E["xl/drawings/_rels/drawing1.xml.rels"] = ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + relationships.join("") + "</Relationships>"), 
             E["xl/worksheets/_rels/sheet1.xml.rels"] = ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>'), 
-            I.push('<Default Extension="' + e + '" ContentType="' + t + '"/>'), I.push('<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>');
+            Object.keys(extensions).forEach(e => I.push('<Default Extension="' + e + '" ContentType="' + extensions[e] + '"/>')), 
+            I.push('<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>');
         }
         const H = {
             "[Content_Types].xml": ft(vt + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' + I.join("") + "</Types>")
@@ -1990,7 +2249,11 @@ var plugin = function(e, t, n) {
                     h.push('<Style ss:ID="fL"><Alignment ss:Horizontal="Left" ss:Vertical="Center"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + t + '" ss:Color="' + e + '" ss:Italic="1"/></Style>'), 
                     h.push('<Style ss:ID="fR"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + t + '" ss:Color="' + e + '" ss:Italic="1"/></Style>');
                 }
-                const b = l.map((t, n) => {
+                const documentHeader = n.documentHeader || null, documentRows = documentHeader && Array.isArray(documentHeader.rows) ? documentHeader.rows : [];
+                documentRows.forEach((e, t) => e.cells.forEach((e, n) => {
+                    h.push('<Style ss:ID="dh' + t + "_" + n + '"><Alignment ss:Horizontal="' + (_e[e.align] || "Left") + '" ss:Vertical="Center" ss:WrapText="1"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + (Number(e.fontSize) || r) + '" ss:Color="' + Ce(e.color, c) + '" ss:Bold="' + (e.bold ? "1" : "0") + '" ss:Italic="' + (e.italic ? "1" : "0") + '"/>' + (e.background ? '<Interior ss:Color="' + Ce(e.background, "#FFFFFF") + '" ss:Pattern="Solid"/>' : "") + (!1 === e.border ? "" : f) + "</Style>");
+                }));
+                const documentHeaderXml = documentRows.map((e, t) => '<Row ss:Height="' + (Number(e.height) || 24) + '">' + e.cells.map((e, n) => '<Cell ss:StyleID="dh' + t + "_" + n + '"' + (Number(e.colspan) > 1 ? ' ss:MergeAcross="' + (Number(e.colspan) - 1) + '"' : "") + '><Data ss:Type="String">' + xe(e.text) + "</Data></Cell>").join("") + "</Row>").join(""), b = l.map((t, n) => {
                     const a = t.width > 0 ? t.width : ke(e, n);
                     return '<Column ss:Index="' + (n + 1) + '" ss:AutoFitWidth="0" ss:Width="' + Math.round(7 * a * .75) + '"/>';
                 }).join(""), v = '<Row ss:Height="22">' + e.header.map((e, t) => '<Cell ss:StyleID="h' + t + '"><Data ss:Type="String">' + xe(e) + "</Data></Cell>").join("") + "</Row>", y = e.body.map((e, t) => {
@@ -2007,13 +2270,15 @@ var plugin = function(e, t, n) {
                     e > 1 && (x += '<Cell ss:Index="' + e + '" ss:StyleID="fR"><Data ss:Type="String">' + xe(g.docCode || "") + "</Data></Cell>"), 
                     x += "</Row>";
                 }
-                return [ '<?xml version="1.0" encoding="UTF-8"?>', '<?mso-application progid="Excel.Sheet"?>', '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:o="urn:schemas-microsoft-com:office:office"', ' xmlns:x="urn:schemas-microsoft-com:office:excel"', ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:html="http://www.w3.org/TR/REC-html40">', "<Styles>" + h.join("") + "</Styles>", '<Worksheet ss:Name="' + xe(Fe(n.sheetName)) + '">', "<Table>", b, v, y, x, "</Table>", '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">', "<FreezePanes/><FrozenNoSplit/><SplitHorizontal>1</SplitHorizontal>", "<TopRowBottomPane>1</TopRowBottomPane><ActivePane>2</ActivePane>", "</WorksheetOptions>", "</Worksheet>", "</Workbook>" ].join("\n");
+                const frozenRows = documentRows.length + 1;
+                return [ '<?xml version="1.0" encoding="UTF-8"?>', '<?mso-application progid="Excel.Sheet"?>', '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:o="urn:schemas-microsoft-com:office:office"', ' xmlns:x="urn:schemas-microsoft-com:office:excel"', ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:html="http://www.w3.org/TR/REC-html40">', "<Styles>" + h.join("") + "</Styles>", '<Worksheet ss:Name="' + xe(Fe(n.sheetName)) + '">', "<Table>", b, documentHeaderXml, v, y, x, "</Table>", '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">', "<FreezePanes/><FrozenNoSplit/><SplitHorizontal>" + frozenRows + "</SplitHorizontal>", "<TopRowBottomPane>" + frozenRows + "</TopRowBottomPane><ActivePane>2</ActivePane>", "</WorksheetOptions>", "</Worksheet>", "</Workbook>" ].join("\n");
             }(e, {
                 sheetName: a.sheetName,
                 fontFamily: a.fontFamily,
                 fontSize: a.fontSize,
                 style: a.style,
-                footer: a.footer
+                footer: a.footer,
+                documentHeader: a.documentHeader
             });
             return $t(n, o, "application/vnd.ms-excel", !1), {
                 fileName: o,
@@ -2032,7 +2297,8 @@ var plugin = function(e, t, n) {
                 fontSize: a.fontSize,
                 style: a.style,
                 footer: a.footer,
-                watermark: a.watermark
+                watermark: a.watermark,
+                documentHeader: a.documentHeader
             }), o, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"), {
                 fileName: o,
                 rowCount: r,
@@ -2040,22 +2306,22 @@ var plugin = function(e, t, n) {
             };
         }
         const l = function(e, t) {
-            const n = t || {}, a = n.style || {}, o = n.fontFamily || "Tahoma", r = Number(n.fontSize) > 0 ? Number(n.fontSize) : 11, l = n.title || "Export", s = ve(a.headerBg, "#1F6FEB"), i = ve(a.headerColor, "#FFFFFF"), d = ve(a.bodyBg, "#FFFFFF"), c = ve(a.bodyColor, "#111827"), u = ve(a.stripeBg, "#F3F6FA"), p = ve(a.borderColor, "#D0D7DE"), m = a.headerAlign || "center", f = e.columns || [], h = n.watermark, g = n.footer, b = [];
+            const n = t || {}, a = n.style || {}, o = n.fontFamily || "Tahoma", r = Number(n.fontSize) > 0 ? Number(n.fontSize) : 11, l = n.title || "Export", s = ve(a.headerBg, "#1F6FEB"), i = ve(a.headerColor, "#FFFFFF"), d = ve(a.bodyBg, "#FFFFFF"), c = ve(a.bodyColor, "#111827"), u = ve(a.stripeBg, "#F3F6FA"), p = ve(a.borderColor, "#D0D7DE"), m = a.headerAlign || "center", f = e.columns || [], h = n.watermark, g = n.footer, documentHeader = n.documentHeader || null, b = [];
             f.forEach((e, t) => {
                 const n = t + 1, a = [];
                 e.headerBg && a.push("background:" + e.headerBg), e.headerColor && a.push("color:" + e.headerColor), 
-                a.length && b.push("thead th:nth-child(" + n + "){" + a.join(";") + "}");
+                a.length && b.push(".ec-data-table thead th:nth-child(" + n + "){" + a.join(";") + "}");
                 const o = [];
                 e.bodyBg && o.push("background:" + e.bodyBg), e.bodyColor && o.push("color:" + e.bodyColor), 
                 e.align && "left" !== e.align && o.push("text-align:" + e.align), e.width && o.push("width:" + 8 * e.width + "px"), 
-                o.length && b.push("tbody td:nth-child(" + n + "){" + o.join(";") + "}");
+                o.length && b.push(".ec-data-table tbody td:nth-child(" + n + "){" + o.join(";") + "}");
             });
-            const v = a.stripeEnabled ? "tbody tr:nth-child(even) td{background:" + u + "}" : "", y = h ? [ ".ec-watermark{", "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);", "width:" + (Number(h.size) > 0 ? Number(h.size) : 55) + "%;", "opacity:" + (Number(h.opacity) >= 0 ? Number(h.opacity) : 12) / 100 + ";", "z-index:0;pointer-events:none;user-select:none;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", ".ec-watermark img{width:100%;height:auto;display:block}" ].join("") : "", x = g ? [ ".ec-footer{", "position:fixed;bottom:0;left:0;right:0;", "display:flex;justify-content:space-between;align-items:flex-end;gap:16px;", "padding:6px 0;", "font-size:" + (Number(g.fontSize) > 0 ? Number(g.fontSize) : 10) + "pt;", "color:" + ve(g.color, "#6B7280") + ";", "background:transparent;z-index:2;", "}", ".ec-footer .ec-right{text-align:right}" ].join("") : "", w = [ "@page{size:A4 landscape;margin:14mm 12mm 18mm}", "*{box-sizing:border-box}", "html,body{margin:0;padding:0}", "body{", "font-family:'" + o + "','Sarabun','TH Sarabun New','Noto Sans Thai',Tahoma,sans-serif;", "font-size:" + r + "pt;color:" + c + ";background:#fff;", "padding:14mm 12mm 18mm;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", y, ".ec-sheet{position:relative;z-index:1}", "table{border-collapse:collapse;width:100%;table-layout:auto}", "thead{display:table-header-group}", "tfoot{display:table-footer-group}", "tr{page-break-inside:avoid;break-inside:avoid}", "th,td{border:1px solid " + p + ";padding:4px 8px;vertical-align:top;word-break:break-word}", "thead th{", "background:" + s + ";color:" + i + ";", "text-align:" + m + ";", "font-weight:" + (!1 === a.headerBold ? "400" : "700") + ";", "}", "tbody td{background:" + d + ";color:" + c + "}", v, b.join(""), x ].join(""), C = e.header.map(e => "<th>" + be(e) + "</th>").join(""), _ = e.body.map(e => "<tr>" + e.map(e => "<td>" + be(e.text) + "</td>").join("") + "</tr>").join(""), F = [];
+            const v = a.stripeEnabled ? ".ec-data-table tbody tr:nth-child(even) td{background:" + u + "}" : "", y = h ? [ ".ec-watermark{", "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);", "width:" + (Number(h.size) > 0 ? Number(h.size) : 55) + "%;", "opacity:" + (Number(h.opacity) >= 0 ? Number(h.opacity) : 12) / 100 + ";", "z-index:0;pointer-events:none;user-select:none;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", ".ec-watermark img{width:100%;height:auto;display:block}" ].join("") : "", x = g ? [ ".ec-footer{", "position:fixed;bottom:0;left:0;right:0;", "display:flex;justify-content:space-between;align-items:flex-end;gap:16px;", "padding:6px 0;", "font-size:" + (Number(g.fontSize) > 0 ? Number(g.fontSize) : 10) + "pt;", "color:" + ve(g.color, "#6B7280") + ";", "background:transparent;z-index:2;", "}", ".ec-footer .ec-right{text-align:right}" ].join("") : "", w = [ "@page{size:A4 landscape;margin:14mm 12mm 18mm}", "*{box-sizing:border-box}", "html,body{margin:0;padding:0}", "body{", "font-family:'" + o + "','Sarabun','TH Sarabun New','Noto Sans Thai',Tahoma,sans-serif;", "font-size:" + r + "pt;color:" + c + ";background:#fff;", "padding:14mm 12mm 18mm;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", y, ".ec-sheet{position:relative;z-index:1}", ".ec-document-header{position:relative;z-index:2;margin:0 0 10px}", ".ec-document-header-image{display:flex}", ".ec-document-header-image img{height:auto;max-width:100%;display:block}", ".ec-document-header table{table-layout:fixed}", "table{border-collapse:collapse;width:100%;table-layout:auto}", "thead{display:table-header-group}", "tfoot{display:table-footer-group}", "tr{page-break-inside:avoid;break-inside:avoid}", "th,td{border:1px solid " + p + ";padding:4px 8px;vertical-align:top;word-break:break-word}", ".ec-data-table thead th{", "background:" + s + ";color:" + i + ";", "text-align:" + m + ";", "font-weight:" + (!1 === a.headerBold ? "400" : "700") + ";", "}", ".ec-data-table tbody td{background:" + d + ";color:" + c + "}", v, b.join(""), x ].join(""), C = e.header.map(e => "<th>" + be(e) + "</th>").join(""), _ = e.body.map(e => "<tr>" + e.map(e => "<td>" + be(e.text) + "</td>").join("") + "</tr>").join(""), documentHeaderHtml = documentHeader ? [ '<div class="ec-document-header">', documentHeader.image && documentHeader.image.dataUrl ? '<div class="ec-document-header-image" style="justify-content:' + ("right" === documentHeader.imagePosition ? "flex-end" : "center" === documentHeader.imagePosition ? "center" : "flex-start") + ";margin-bottom:" + (Number(documentHeader.imageGap) || 0) + 'px"><img src="' + be(documentHeader.image.dataUrl) + '" alt="" style="width:' + (Number(documentHeader.imageWidth) || 120) + 'px"></div>' : "", documentHeader.rows && documentHeader.rows.length ? '<table><tbody>' + documentHeader.rows.map(e => '<tr style="height:' + (Number(e.height) || 24) + 'px">' + e.cells.map(e => '<td colspan="' + (Number(e.colspan) || 1) + '" style="' + be(documentHeaderCellStyle(e)) + '">' + be(e.text) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" : "", "</div>" ].join("") : "", F = [];
             return F.push("<!DOCTYPE html>"), F.push('<html lang="' + be(n.lang || "th") + '">'), 
             F.push("<head>"), F.push('<meta charset="utf-8">'), F.push('<meta name="viewport" content="width=device-width,initial-scale=1">'), 
             F.push("<title>" + be(l) + "</title>"), F.push("<style>" + w + "</style>"), F.push("</head>"), 
             F.push("<body>"), h && h.dataUrl && F.push('<div class="ec-watermark"><img src="' + be(h.dataUrl) + '" alt=""></div>'), 
-            F.push('<div class="ec-sheet">'), F.push("<table>"), F.push("<thead><tr>" + C + "</tr></thead>"), 
+            F.push('<div class="ec-sheet">'), documentHeaderHtml && F.push(documentHeaderHtml), F.push('<table class="ec-data-table">'), F.push("<thead><tr>" + C + "</tr></thead>"), 
             F.push("<tbody>" + _ + "</tbody>"), F.push("</table>"), F.push("</div>"), g && (g.startDate || g.docCode) && (F.push('<div class="ec-footer">'), 
             F.push('<div class="ec-left">' + be(g.startDate || "") + "</div>"), F.push('<div class="ec-right">' + be(g.docCode || "") + "</div>"), 
             F.push("</div>")), F.push("</body></html>"), F.join("\n");
@@ -2066,7 +2332,8 @@ var plugin = function(e, t, n) {
             fontSize: a.fontSize,
             style: a.style,
             footer: a.footer,
-            watermark: a.watermark
+            watermark: a.watermark,
+            documentHeader: a.documentHeader
         });
         if ("html" === t) return $t(l, o, "text/html", !1), {
             fileName: o,
@@ -2280,7 +2547,7 @@ var plugin = function(e, t, n) {
                 style: e[23],
                 hasLocalOverride: e[9]
             }
-        }), n.$on("change", e[31]), n.$on("regenerate", e[32]), n.$on("save", e[33]), n.$on("reset", e[34]), 
+        }), n.$on("change", e[31]), n.$on("regenerate", e[32]), n.$on("save", e[33]), n.$on("reset", e[34]), n.$on("headerdesign", e[114]), 
         n.$on("export", e[107]), n.$on("close", e[108]), {
             c() {
                 t.create_component(n.$$.fragment);
@@ -2359,12 +2626,12 @@ var plugin = function(e, t, n) {
         };
     }
     function Jt(e, a, o) {
-        let r, l, s, i, d, c, u, p, m, f, g, b, x, w, k, S, D, z, N, Y, O, E, I, {sourceMode: H = "provider"} = a, {dataProvider: P = null} = a, {dataSource: A = null} = a, {sortColumn: j = ""} = a, {sortOrder: V = "ascending"} = a, {pageSize: R = 500} = a, {maxRows: L = 1e4} = a, {fetchOnLoad: U = !0} = a, {autoColumns: W = !0} = a, {excludeFields: J = ""} = a, {columnsJson: Z = ""} = a, {showDesigner: X = !0} = a, {timezone: q = "+7"} = a, {tzOffsetHours: G = 7} = a, {dateFormat: Q = "DD/MM/YYYY"} = a, {dateFormatCustom: K = ""} = a, {autoDetectDates: ee = !0} = a, {buddhistEra: te = !1} = a, {thaiMonthNames: ne = !1} = a, {language: ae = "th"} = a, {fontFamily: oe = "Tahoma"} = a, {bom: re = !0} = a, {fileName: le = "export"} = a, {appendTimestamp: se = !1} = a, {exportFormat: de = "csv"} = a, {showFormatPicker: ce = !1} = a, {delimiter: ue = "comma"} = a, {sheetName: pe = "Sheet1"} = a, {headerBg: fe = "#1F6FEB"} = a, {headerColor: he = "#FFFFFF"} = a, {headerBold: ge = !0} = a, {headerAlign: be = "center"} = a, {bodyBg: ve = "#FFFFFF"} = a, {bodyColor: ye = "#111827"} = a, {stripeEnabled: xe = !0} = a, {stripeBg: we = "#F3F6FA"} = a, {borderColor: Ce = "#D0D7DE"} = a, {fontSize: _e = 11} = a, {watermark: Fe = ""} = a, {watermarkOpacity: ke = 12} = a, {watermarkSize: Se = 55} = a, {showFooter: De = !0} = a, {startDateLabel: Me = "วันที่เริ่มใช้งาน"} = a, {startDate: $e = ""} = a, {docCodeLabel: Te = "รหัสเอกสาร"} = a, {docCode: ze = ""} = a, {footerColor: Ne = "#6B7280"} = a, {footerFontSize: Be = 10} = a, {buttonText: Ye = ""} = a, {showIcon: Oe = !0} = a, {buttonSize: Ee = "M"} = a, {buttonVariant: Ie = "solid"} = a, {buttonBg: He = "#16A34A"} = a, {buttonColor: Pe = "#FFFFFF"} = a, {buttonRadius: Ae = 6} = a, {fullWidth: je = !1} = a, {showRowCount: Ve = !0} = a, {showPreviewButton: Re = !1} = a, {onExport: Le} = a, {onError: Ue} = a;
+        let r, l, s, i, d, c, u, p, m, f, g, b, x, w, k, S, D, z, N, Y, O, E, I, {sourceMode: H = "provider"} = a, {dataProvider: P = null} = a, {dataSource: A = null} = a, {sortColumn: j = ""} = a, {sortOrder: V = "ascending"} = a, {pageSize: R = 500} = a, {maxRows: L = 1e4} = a, {fetchOnLoad: U = !0} = a, {autoColumns: W = !0} = a, {excludeFields: J = ""} = a, {columnsJson: Z = ""} = a, {showDesigner: X = !0} = a, {timezone: q = "+7"} = a, {tzOffsetHours: G = 7} = a, {dateFormat: Q = "DD/MM/YYYY"} = a, {dateFormatCustom: K = ""} = a, {autoDetectDates: ee = !0} = a, {buddhistEra: te = !1} = a, {thaiMonthNames: ne = !1} = a, {language: ae = "th"} = a, {fontFamily: oe = "Tahoma"} = a, {bom: re = !0} = a, {fileName: le = "export"} = a, {appendTimestamp: se = !1} = a, {exportFormat: de = "csv"} = a, {showFormatPicker: ce = !1} = a, {delimiter: ue = "comma"} = a, {sheetName: pe = "Sheet1"} = a, {headerBg: fe = "#1F6FEB"} = a, {headerColor: he = "#FFFFFF"} = a, {headerBold: ge = !0} = a, {headerAlign: be = "center"} = a, {bodyBg: ve = "#FFFFFF"} = a, {bodyColor: ye = "#111827"} = a, {stripeEnabled: xe = !0} = a, {stripeBg: we = "#F3F6FA"} = a, {borderColor: Ce = "#D0D7DE"} = a, {fontSize: _e = 11} = a, {watermark: Fe = ""} = a, {watermarkOpacity: ke = 12} = a, {watermarkSize: Se = 55} = a, {showFooter: De = !0} = a, {startDateLabel: Me = "วันที่เริ่มใช้งาน"} = a, {startDate: $e = ""} = a, {docCodeLabel: Te = "รหัสเอกสาร"} = a, {docCode: ze = ""} = a, {footerColor: Ne = "#6B7280"} = a, {footerFontSize: Be = 10} = a, {buttonText: Ye = ""} = a, {showIcon: Oe = !0} = a, {buttonSize: Ee = "M"} = a, {buttonVariant: Ie = "solid"} = a, {buttonBg: He = "#16A34A"} = a, {buttonColor: Pe = "#FFFFFF"} = a, {buttonRadius: Ae = 6} = a, {fullWidth: je = !1} = a, {showRowCount: Ve = !0} = a, {showPreviewButton: Re = !1} = a, {onExport: Le} = a, {onError: Ue} = a, {showDocumentHeader = !1} = a, {documentHeaderImage = ""} = a, {documentHeaderImagePosition = "left"} = a, {documentHeaderImageWidth = 120} = a, {documentHeaderRows = "[]"} = a;
         const We = n.getContext("sdk"), Je = n.getContext("component");
         t.component_subscribe(e, Je, e => o(26, E = e));
         const {styleable: Ze, API: Xe, fetchData: qe, notificationStore: Ge, builderStore: Qe} = We;
         t.component_subscribe(e, Qe, e => o(104, I = e));
-        let Ke = !1, et = [], tt = !1, nt = !1, at = "", ot = null, rt = null, lt = !1, st = [], it = null, dt = !1, ct = "", ut = null;
+        let Ke = !1, et = [], tt = !1, nt = !1, at = "", ot = null, rt = null, lt = !1, st = [], it = null, dt = !1, ct = "", ut = null, headerOverrideRows = null;
         function pt() {
             return qe && Xe && A ? qe({
                 API: Xe,
@@ -2417,6 +2684,25 @@ var plugin = function(e, t, n) {
         }
         function vt(e) {
             o(16, at = e), ot && clearTimeout(ot), ot = setTimeout(() => o(16, at = ""), 3200);
+        }
+        function currentHeaderRows() {
+            if (null !== headerOverrideRows) return headerOverrideRows;
+            const e = parseLockedDesign(Z).documentHeaderRows;
+            if (null !== e) return e;
+            try {
+                return parseDocumentHeaderRows(documentHeaderRows, Math.max(1, (b || []).filter(e => !1 !== e.include).length || p.length || 1));
+            } catch (e) {
+                return [];
+            }
+        }
+        async function copyLockedDesign() {
+            const e = T(et.length ? et : b || [], currentHeaderRows());
+            if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(e); else {
+                const t = document.createElement("textarea");
+                t.value = e, t.style.position = "fixed", t.style.opacity = "0", document.body.appendChild(t), 
+                t.select(), document.execCommand("copy"), document.body.removeChild(t);
+            }
+            o(9, tt = !0), vt(r("saved"));
         }
         async function yt(e) {
             if (nt) return;
@@ -2471,6 +2757,13 @@ var plugin = function(e, t, n) {
                 let l = null;
                 Fe && -1 !== [ "xlsx", "html", "pdf" ].indexOf(t) && (l = await me(Fe), l ? (l.opacity = ke, 
                 l.size = Se) : vt(r("watermarkFailed")));
+                let documentHeader = null;
+                const headerRows = parseDocumentHeaderRows(currentHeaderRows(), o.columns.length), hasDocumentHeader = headerRows.length > 0;
+                if (hasDocumentHeader && -1 !== [ "xlsx", "xls", "html", "pdf" ].indexOf(t)) {
+                    documentHeader = {
+                        rows: headerRows
+                    };
+                }
                 const i = await Bt(o, t, {
                     fileName: le,
                     appendTimestamp: se,
@@ -2485,6 +2778,7 @@ var plugin = function(e, t, n) {
                     style: S,
                     footer: gt(),
                     watermark: l,
+                    documentHeader: documentHeader,
                     title: le
                 });
                 vt(r("exported", {
@@ -2533,7 +2827,12 @@ var plugin = function(e, t, n) {
             "buttonBg" in e && o(86, He = e.buttonBg), "buttonColor" in e && o(87, Pe = e.buttonColor), 
             "buttonRadius" in e && o(88, Ae = e.buttonRadius), "fullWidth" in e && o(5, je = e.fullWidth), 
             "showRowCount" in e && o(6, Ve = e.showRowCount), "showPreviewButton" in e && o(7, Re = e.showPreviewButton), 
-            "onExport" in e && o(89, Le = e.onExport), "onError" in e && o(90, Ue = e.onError);
+            "onExport" in e && o(89, Le = e.onExport), "onError" in e && o(90, Ue = e.onError), 
+            "showDocumentHeader" in e && o(109, showDocumentHeader = e.showDocumentHeader), 
+            "documentHeaderImage" in e && o(110, documentHeaderImage = e.documentHeaderImage), 
+            "documentHeaderImagePosition" in e && o(111, documentHeaderImagePosition = e.documentHeaderImagePosition), 
+            "documentHeaderImageWidth" in e && o(112, documentHeaderImageWidth = e.documentHeaderImageWidth), 
+            "documentHeaderRows" in e && o(113, documentHeaderRows = e.documentHeaderRows);
         }, e.$$.update = () => {
             2 & e.$$.dirty[0] && o(11, r = function(e) {
                 const t = ie[e] || ie.th;
@@ -2591,24 +2890,28 @@ var plugin = function(e, t, n) {
             o(8, et = F(p, u)), o(9, tt = !0);
         }, async function() {
             try {
-                const e = T(et);
-                if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(e); else {
-                    const t = document.createElement("textarea");
-                    t.value = e, t.style.position = "fixed", t.style.opacity = "0", document.body.appendChild(t), 
-                    t.select(), document.execCommand("copy"), document.body.removeChild(t);
-                }
-                o(9, tt = !0), vt(r("saved"));
+                await copyLockedDesign();
             } catch (e) {
                 bt(e && e.message || String(e));
             }
         }, function() {
-            o(9, tt = !1), o(8, et = f || F(p, u)), vt(r("cleared"));
+            headerOverrideRows = null, o(9, tt = !1), o(8, et = f || F(p, u)), vt(r("cleared"));
         }, yt, function() {
             o(17, lt = !lt);
         }, xt, function(e) {
             if (!lt) return;
             e.target.closest && e.target.closest(".ec-format") || o(17, lt = !1);
-        }, H, P, A, j, V, R, L, U, W, J, Z, q, G, Q, K, ee, te, ne, oe, re, le, se, de, ue, pe, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De, Me, $e, Te, ze, Ne, Be, Ye, Ie, He, Pe, Ae, Le, Ue, rt, st, it, ct, s, d, u, w, x, f, g, m, i, I, () => yt(), e => xt(e.value), () => yt(), () => o(14, Ke = !1) ];
+        }, H, P, A, j, V, R, L, U, W, J, Z, q, G, Q, K, ee, te, ne, oe, re, le, se, de, ue, pe, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De, Me, $e, Te, ze, Ne, Be, Ye, Ie, He, Pe, Ae, Le, Ue, rt, st, it, ct, s, d, u, w, x, f, g, m, i, I, () => yt(), e => xt(e.value), () => yt(), () => o(14, Ke = !1), showDocumentHeader, documentHeaderImage, documentHeaderImagePosition, documentHeaderImageWidth, documentHeaderRows, function() {
+            const e = (et.length ? et : b || []).filter(e => !1 !== e.include).length || p.length || 1;
+            openDocumentHeaderDesigner({
+                rows: currentHeaderRows(),
+                columnCount: e,
+                language: ae,
+                onApply: e => {
+                    headerOverrideRows = e, o(9, tt = !0), copyLockedDesign().then(() => vt(r("headerDesignApplied"))).catch(e => bt(e && e.message || String(e)));
+                }
+            });
+        } ];
     }
     class Zt extends t.SvelteComponent {
         constructor(e) {
@@ -2672,11 +2975,16 @@ var plugin = function(e, t, n) {
                 showRowCount: 6,
                 showPreviewButton: 7,
                 onExport: 89,
-                onError: 90
+                onError: 90,
+                showDocumentHeader: 109,
+                documentHeaderImage: 110,
+                documentHeaderImagePosition: 111,
+                documentHeaderImageWidth: 112,
+                documentHeaderRows: 113
             }, null, [ -1, -1, -1, -1, -1 ]);
         }
     }
-    var Xt = "export", qt = "1.4.2";
+    var Xt = "exporter-csv", qt = "1.9.0";
     function Gt(e) {
         let n;
         const a = e[7].default, o = t.create_slot(a, e, e[6], null);
@@ -3063,9 +3371,9 @@ var plugin = function(e, t, n) {
         type: "component",
         metadata: {},
         schema: {
-            name: "export",
-            friendlyName: "Export",
-            description: "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Thai ready, per-column headers and colours, +07:00 and UTC date-time formatting, background watermark, start date and document code footer.",
+            name: "exporter-csv",
+            friendlyName: "Exporter-Csv",
+            description: "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Includes Thai date-time formatting, column styling, multi-row merged document headers, watermark and footer.",
             icon: "Download",
             settings: [ {
                 section: !0,
@@ -3167,16 +3475,16 @@ var plugin = function(e, t, n) {
                     dependsOn: "autoColumns"
                 }, {
                     type: "text",
-                    label: "Column design (JSON)",
+                    label: "Locked design data",
                     key: "columnsJson",
                     placeholder: '[{"field":"name","header":"ชื่อ-นามสกุล","width":24},{"field":"created_at","header":"วันที่สร้าง","format":"date","datePattern":"DD/MM/YYYY","tz":"+7"}]',
-                    info: "Persistent component design. Copy the JSON from the visual Designer, paste it here, then Publish the app."
+                    info: "Stores columns and document-header design together. Use the visual Designer, paste the copied locked value here, then Publish the app."
                 }, {
                     type: "boolean",
                     label: "Show Design button",
                     key: "showDesigner",
                     defaultValue: !0,
-                    info: "Opens the column designer. Copy the finished JSON into Column design (JSON), then Publish to lock the design."
+                    info: "Opens the visual designer for columns and document-header rows. Copy the finished value into Locked design data, then Publish."
                 } ]
             }, {
                 section: !0,

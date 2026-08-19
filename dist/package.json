@@ -1,7 +1,7 @@
 {
-  "name": "export",
-  "version": "1.4.2",
-  "description": "Open-source Budibase 3.4.1 export component with component-locked column design JSON",
+  "name": "exporter-csv",
+  "version": "1.9.0",
+  "description": "Open-source Budibase 3.4.1 export component with styled document headers, images, merged rows and component-locked column design JSON",
   "author": "Thanakrit Yaemsuk / KWTeam OFFICIAL",
   "license": "MIT",
   "private": false,

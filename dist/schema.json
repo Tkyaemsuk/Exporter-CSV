@@ -2,9 +2,9 @@
   "type": "component",
   "metadata": {},
   "schema": {
-    "name": "export",
-    "friendlyName": "Export",
-    "description": "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Lock column designs in the component's Columns JSON setting without localStorage or a config table.",
+    "name": "exporter-csv",
+    "friendlyName": "Exporter-Csv",
+    "description": "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Includes Thai date-time formatting, column styling, multi-row merged document headers, watermark and footer.",
     "icon": "Download",
     "settings": [
       {
@@ -126,17 +126,17 @@
           },
           {
             "type": "text",
-            "label": "Column design (JSON)",
+            "label": "Locked design data",
             "key": "columnsJson",
             "placeholder": "[{\"field\":\"name\",\"header\":\"ชื่อ-นามสกุล\",\"width\":24},{\"field\":\"created_at\",\"header\":\"วันที่สร้าง\",\"format\":\"date\",\"datePattern\":\"DD/MM/YYYY\",\"tz\":\"+7\"}]",
-            "info": "Persistent component design. In the visual Designer, copy the JSON, paste it here, then Publish the app."
+            "info": "Stores columns and document-header design together. Use the visual Designer, paste the copied locked value here, then Publish the app."
           },
           {
             "type": "boolean",
             "label": "Show Design button",
             "key": "showDesigner",
             "defaultValue": true,
-            "info": "Opens the column designer. Copy the finished JSON into Column design (JSON), then Publish to lock the design."
+            "info": "Opens the visual designer for columns and document-header rows. Copy the finished value into Locked design data, then Publish."
           }
         ]
       },
@@ -672,6 +672,6 @@
       }
     ]
   },
-  "hash": "6185ad1464088189baa11de746202f9c7c5dbd4d",
-  "version": "1.4.2"
+  "hash": "6e6c9c5c4b22c666de9cb0fa6a275639afaaeb72",
+  "version": "1.9.0"
 }

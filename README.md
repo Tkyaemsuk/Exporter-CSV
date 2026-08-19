@@ -1,8 +1,8 @@
-# 📤 Export — Budibase Component Plugin
+# 📤 Exporter-Csv — Budibase Component Plugin
 
 > Plugin สำหรับส่งออกข้อมูลจาก Budibase อย่างเป็นระบบ พร้อม Visual Column Designer การจัดรูปแบบภาษาไทย และการล็อกดีไซน์ไว้ใน Component Settings
 
-**Version:** `1.4.2`  
+**Version:** `1.9.0`  
 **Compatibility:** Budibase `v3.4.1`  
 **Runtime:** Svelte `3`  
 **License:** MIT
@@ -11,9 +11,11 @@
 
 ## 📌 ภาพรวม
 
-`Export` เป็น Custom Component Plugin สำหรับ Budibase ที่ช่วยส่งออกข้อมูลจาก **Table, View, Query และ Data Provider** ไปยังไฟล์หลายรูปแบบ โดยผู้พัฒนาสามารถกำหนดชื่อ ลำดับ สี ความกว้าง การจัดตำแหน่ง และรูปแบบข้อมูลของแต่ละคอลัมน์ผ่าน Visual Designer ได้
+`Exporter-Csv` เป็น Custom Component Plugin สำหรับ Budibase ที่ช่วยส่งออกข้อมูลจาก **Table, View, Query และ Data Provider** ไปยังไฟล์หลายรูปแบบ โดยผู้พัฒนาสามารถกำหนดชื่อ ลำดับ สี ความกว้าง การจัดตำแหน่ง และรูปแบบข้อมูลของแต่ละคอลัมน์ผ่าน Visual Designer ได้
 
-การตั้งค่าคอลัมน์จะถูกจัดเก็บในช่อง `Column design (JSON)` ของ Component โดยตรง จึงติดไปกับ App Definition และไม่สูญหายเมื่อเปลี่ยนเครื่องหรือเปลี่ยนเบราว์เซอร์
+รุ่น v1.9.0 เปลี่ยนชื่อ Plugin เป็น `Exporter-Csv` และคงระบบ Document Header Rows, Merge column, สี และรูปแบบตัวอักษรไว้ครบถ้วน โดยไม่มีระบบรูปภาพหรือโลโก้ใน Document Header
+
+ดีไซน์คอลัมน์และส่วนหัวเอกสารถูกจัดเก็บร่วมกันในช่อง `Locked design data` ของ Component จึงติดไปกับ App Definition และไม่สูญหายเมื่อเปลี่ยนเครื่องหรือเปลี่ยนเบราว์เซอร์
 
 > Plugin ไม่ใช้ `localStorage` และไม่ต้องสร้าง Config Table เพิ่มเติม
 
@@ -50,6 +52,7 @@
 - กำหนดความกว้างคอลัมน์
 - กำหนดสีพื้นหลังและสีข้อความของหัวตารางหรือข้อมูล
 - เรียงลำดับ ทำสำเนา และลบคอลัมน์
+- มีปุ่ม `ออกแบบหัวเอกสาร` อยู่ใน Visual Designer เดียวกัน
 
 ### 🇹🇭 ภาษาและวันที่
 
@@ -62,6 +65,9 @@
 
 ### 🖼️ รูปแบบเอกสาร
 
+- เพิ่มส่วนหัวเอกสารได้หลายแถว
+- Merge คอลัมน์ในส่วนหัวด้วย `colspan`
+- กำหนดสีพื้นหลัง สีข้อความ การจัดตำแหน่ง ตัวหนา ตัวเอียง และขนาดตัวอักษรราย Cell
 - ตั้งค่าสีหัวตารางและสีข้อความ
 - กำหนดตัวอักษรและขนาดตัวอักษร
 - เปิดใช้แถวสลับสีได้
@@ -88,19 +94,19 @@
 ## 🚀 การติดตั้ง Plugin ใน Budibase
 
 1. เปิดโฟลเดอร์ `release`
-2. เลือกไฟล์ `export-1.4.2.tar.gz`
+2. เลือกไฟล์ `exporter-csv-1.9.0.tar.gz`
 3. เปิด Budibase Portal
 4. ไปที่ **Settings → Plugins**
 5. เลือก **Add plugin → File Upload**
 6. อัปโหลดไฟล์ Plugin
 7. Refresh หน้า App Builder
-8. เพิ่ม Component ชื่อ `Export` ลงในหน้าจอ
+8. เพิ่ม Component ชื่อ `Exporter-Csv` ลงในหน้าจอ
 
 ---
 
 ## ⚙️ การใช้งานเบื้องต้น
 
-1. เลือก Component `Export`
+1. เลือก Component `Exporter-Csv`
 2. ที่หัวข้อ `DATA SOURCE` เลือก Source type
 3. เลือก Table, View, Query หรือ Data Provider
 4. ตั้งชื่อไฟล์และรูปแบบไฟล์ที่หัวข้อ `FILE`
@@ -110,16 +116,34 @@
 
 ---
 
-## 🔒 การล็อก Column Design
+## 🧾 การสร้าง Document Header ผ่าน Visual Designer
+
+1. กดปุ่ม `ออกแบบคอลัมน์` บน Component
+2. ในหน้าต่าง Designer กด `ออกแบบหัวเอกสาร`
+3. กด `เพิ่มแถว` และ `เพิ่มช่อง` ตามต้องการ
+4. ใส่ข้อความและกำหนดจำนวนคอลัมน์ที่ต้องการ Merge
+5. เลือกสีพื้นหลัง สีข้อความ การจัดวาง ตัวหนา ตัวเอียง ขนาดตัวอักษร และเส้นขอบ
+6. ตรวจสอบหัวเอกสารใน Live Preview แล้วกด `ใช้ดีไซน์และคัดลอกค่าล็อก`
+7. วางค่าที่คัดลอกไว้ใน `Locked design data` แล้วกด `Publish`
+
+Document Header จะทำงานอัตโนมัติเมื่อพบ Header Rows ไม่ต้องเปิดสวิตช์แยก และไม่รองรับการใส่รูปภาพหรือโลโก้ในส่วนหัว
+
+ไม่จำเป็นต้องเขียนหรือแก้ไข Header Rows JSON ด้วยตนเอง และระบบยังอ่านค่ารูปแบบเก่าจาก v1.5.0 ได้เพื่อป้องกันดีไซน์เดิมสูญหาย
+
+> รูปภาพรองรับใน XLSX, HTML และ PDF ส่วนแถวข้อความ การ Merge และสีรองรับใน XLSX, XLS, HTML และ PDF
+
+---
+
+## 🔒 การล็อก Column และ Document Header Design
 
 Budibase v3.4.1 ไม่อนุญาตให้ Runtime Plugin แก้ไข Component Settings ของตัวเองโดยตรง ขั้นตอนการบันทึกดีไซน์จึงออกแบบให้ชัดเจนและปลอดภัยดังนี้
 
-1. เปิด Visual Column Designer
-2. ปรับแต่งคอลัมน์ให้เรียบร้อย
-3. กด `คัดลอกเพื่อล็อกดีไซน์`
+1. เปิด Visual Designer
+2. ปรับแต่งคอลัมน์และส่วนหัวเอกสารให้เรียบร้อย
+3. กด `คัดลอกเพื่อล็อกดีไซน์` หรือ `ใช้ดีไซน์และคัดลอกค่าล็อก`
 4. กลับไปที่ Component Settings
 5. เปิดหัวข้อ `COLUMNS`
-6. วาง JSON ลงในช่อง `Column design (JSON)`
+6. วางค่าลงในช่อง `Locked design data`
 7. กด `Publish`
 
 หลัง Publish ดีไซน์จะถูกเก็บกับ Component และใช้งานได้เหมือนกันทุกเบราว์เซอร์
@@ -155,7 +179,7 @@ npm run package
 ไฟล์ที่ได้จะอยู่ที่:
 
 ```text
-release/export-1.4.2.tar.gz
+release/exporter-csv-1.9.0.tar.gz
 ```
 
 ---
@@ -163,7 +187,7 @@ release/export-1.4.2.tar.gz
 ## 🗂️ โครงสร้างโครงการ
 
 ```text
-export-v1.4.2-open-source/
+exporter-csv-v1.9.0-open-source/
 ├── src/
 │   └── plugin.js          # Source bundle ที่จัดรูปแบบให้อ่านและแก้ไขได้
 ├── dist/
@@ -171,7 +195,7 @@ export-v1.4.2-open-source/
 │   ├── schema.json
 │   └── package.json
 ├── release/
-│   └── export-1.4.2.tar.gz
+│   └── exporter-csv-1.9.0.tar.gz
 ├── scripts/
 │   ├── build.mjs          # Build และอัปเดต Schema hash
 │   ├── verify.mjs         # ตรวจสอบความถูกต้องของ Plugin
@@ -216,9 +240,9 @@ npm run verify
 
 ## 🔍 หมายเหตุเกี่ยวกับ Source Code
 
-ไฟล์ต้นทางที่ได้รับสำหรับ v1.4.2 เป็น Distribution Bundle ที่ Compile ด้วย Svelte 3 แล้ว โดยไม่มีไฟล์ `.svelte` หรือ Source Map แนบมาด้วย
+ไฟล์ฐานที่ได้รับเป็น Distribution Bundle v1.4.2 ที่ Compile ด้วย Svelte 3 แล้ว โดยไม่มีไฟล์ `.svelte` หรือ Source Map แนบมาด้วย จากนั้นเพิ่ม Document Header ใน v1.5.0, Visual Header Designer ใน v1.6.0 และ Logo Designer ใน v1.7.0
 
-ไฟล์ `src/plugin.js` ในโครงการนี้จึงเป็น Bundle ตัวจริงของ v1.4.2 ที่ผ่านการ Beautify เพื่อให้สามารถอ่าน ค้นหา แก้ไข และ Build กลับเป็น `plugin.min.js` ได้ รายละเอียดเพิ่มเติมอยู่ใน [`SOURCE-NOTES.md`](SOURCE-NOTES.md)
+ไฟล์ `src/plugin.js` ในโครงการนี้เป็น recovered source ที่ผ่านการ Beautify และพัฒนาต่อ เพื่อให้สามารถอ่าน ค้นหา แก้ไข และ Build กลับเป็น `plugin.min.js` ได้ รายละเอียดเพิ่มเติมอยู่ใน [`SOURCE-NOTES.md`](SOURCE-NOTES.md)
 
 ---
 
@@ -251,8 +275,7 @@ npm run verify
 
 ## 👨‍💻 ผู้พัฒนา
 
-**Thanakrit Yaemsuk** <br>
-**Thiwat Khanphachai**
+**Thanakrit Yaemsuk**  
+KWTeam OFFICIAL
 
 สร้างขึ้นเพื่อช่วยให้การส่งออกข้อมูลจาก Budibase มีความยืดหยุ่น เป็นมาตรฐาน และรองรับการใช้งานภาษาไทยอย่างสมบูรณ์
-

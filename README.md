@@ -1,8 +1,8 @@
-# 📤 Exporter-Csv — Budibase Component Plugin
+# 📤 XLSX-EXPORT — Budibase Component Plugin
 
 > Plugin สำหรับส่งออกข้อมูลจาก Budibase อย่างเป็นระบบ พร้อม Visual Column Designer การจัดรูปแบบภาษาไทย และการล็อกดีไซน์ไว้ใน Component Settings
 
-**Version:** `1.9.0`  
+**Version:** `1.10.1`  
 **Compatibility:** Budibase `v3.4.1`  
 **Runtime:** Svelte `3`  
 **License:** MIT
@@ -11,9 +11,9 @@
 
 ## 📌 ภาพรวม
 
-`Exporter-Csv` เป็น Custom Component Plugin สำหรับ Budibase ที่ช่วยส่งออกข้อมูลจาก **Table, View, Query และ Data Provider** ไปยังไฟล์หลายรูปแบบ โดยผู้พัฒนาสามารถกำหนดชื่อ ลำดับ สี ความกว้าง การจัดตำแหน่ง และรูปแบบข้อมูลของแต่ละคอลัมน์ผ่าน Visual Designer ได้
+`XLSX-EXPORT` เป็น Custom Component Plugin สำหรับ Budibase ที่ช่วยส่งออกข้อมูลจาก **Table, View, Query และ Data Provider** ไปยังไฟล์หลายรูปแบบ โดยผู้พัฒนาสามารถกำหนดชื่อ ลำดับ สี ความกว้าง การจัดตำแหน่ง และรูปแบบข้อมูลของแต่ละคอลัมน์ผ่าน Visual Designer ได้
 
-รุ่น v1.9.0 เปลี่ยนชื่อ Plugin เป็น `Exporter-Csv` และคงระบบ Document Header Rows, Merge column, สี และรูปแบบตัวอักษรไว้ครบถ้วน โดยไม่มีระบบรูปภาพหรือโลโก้ใน Document Header
+รุ่น v1.10.1 เพิ่ม Conditional Formatting ที่ให้ผู้ใช้งานกำหนดคอลัมน์ ตัวดำเนินการ ค่าที่เปรียบเทียบ สีพื้นหลัง และสีข้อความได้เองทั้งหมดผ่านปุ่ม `กำหนดเงื่อนไขสี` โดยกฎใหม่จะยังไม่ทำงานจนกว่าผู้ใช้จะเปิดใช้งาน
 
 ดีไซน์คอลัมน์และส่วนหัวเอกสารถูกจัดเก็บร่วมกันในช่อง `Locked design data` ของ Component จึงติดไปกับ App Definition และไม่สูญหายเมื่อเปลี่ยนเครื่องหรือเปลี่ยนเบราว์เซอร์
 
@@ -51,6 +51,9 @@
 - จัดตำแหน่งข้อความซ้าย กึ่งกลาง หรือขวา
 - กำหนดความกว้างคอลัมน์
 - กำหนดสีพื้นหลังและสีข้อความของหัวตารางหรือข้อมูล
+- กำหนดสีพื้นหลังและสีข้อความตามค่าของเซลล์ด้วย Conditional Formatting
+- รองรับเงื่อนไข เท่ากับ ไม่เท่ากับ มากกว่า น้อยกว่า มีข้อความ ขึ้นต้น ลงท้าย ค่าว่าง และไม่ว่าง
+- ใช้กฎแรกที่ตรงเงื่อนไขและรองรับได้สูงสุด 20 กฎต่อคอลัมน์
 - เรียงลำดับ ทำสำเนา และลบคอลัมน์
 - มีปุ่ม `ออกแบบหัวเอกสาร` อยู่ใน Visual Designer เดียวกัน
 
@@ -94,19 +97,19 @@
 ## 🚀 การติดตั้ง Plugin ใน Budibase
 
 1. เปิดโฟลเดอร์ `release`
-2. เลือกไฟล์ `exporter-csv-1.9.0.tar.gz`
+2. เลือกไฟล์ `xlsx-export-1.10.1.tar.gz`
 3. เปิด Budibase Portal
 4. ไปที่ **Settings → Plugins**
 5. เลือก **Add plugin → File Upload**
 6. อัปโหลดไฟล์ Plugin
 7. Refresh หน้า App Builder
-8. เพิ่ม Component ชื่อ `Exporter-Csv` ลงในหน้าจอ
+8. เพิ่ม Component ชื่อ `XLSX-EXPORT` ลงในหน้าจอ
 
 ---
 
 ## ⚙️ การใช้งานเบื้องต้น
 
-1. เลือก Component `Exporter-Csv`
+1. เลือก Component `XLSX-EXPORT`
 2. ที่หัวข้อ `DATA SOURCE` เลือก Source type
 3. เลือก Table, View, Query หรือ Data Provider
 4. ตั้งชื่อไฟล์และรูปแบบไฟล์ที่หัวข้อ `FILE`
@@ -131,6 +134,22 @@ Document Header จะทำงานอัตโนมัติเมื่อ�
 ไม่จำเป็นต้องเขียนหรือแก้ไข Header Rows JSON ด้วยตนเอง และระบบยังอ่านค่ารูปแบบเก่าจาก v1.5.0 ได้เพื่อป้องกันดีไซน์เดิมสูญหาย
 
 > รูปภาพรองรับใน XLSX, HTML และ PDF ส่วนแถวข้อความ การ Merge และสีรองรับใน XLSX, XLS, HTML และ PDF
+
+---
+
+## 🎯 การกำหนดสีตามเงื่อนไข
+
+1. เปิด `ออกแบบคอลัมน์`
+2. กด `กำหนดเงื่อนไขสี`
+3. เลือกคอลัมน์แล้วกด `เพิ่มเงื่อนไข`
+4. เลือกตัวดำเนินการและใส่ค่าที่ต้องการเปรียบเทียบ
+5. เลือกสีพื้นหลังและสีข้อความ เช่น `ค่าเท่ากับ 1 → พื้นหลังสีแดง`
+6. กด `ใช้เงื่อนไข` และตรวจสอบผลใน Preview
+7. กด `คัดลอกเพื่อล็อกดีไซน์` แล้ววางใน `Locked design data` ก่อน Publish
+
+Conditional Formatting มีผลกับ Preview และไฟล์ XLSX, XLS, HTML และ PDF ส่วน CSV และ JSON จะส่งออกเฉพาะข้อมูลตามข้อจำกัดของรูปแบบไฟล์
+
+ระบบไม่รัน JavaScript จากผู้ใช้โดยตรง จึงลดความเสี่ยงจากโค้ดอันตรายและทำให้กฎทำงานเหมือนกันในทุกเบราว์เซอร์
 
 ---
 
@@ -179,7 +198,7 @@ npm run package
 ไฟล์ที่ได้จะอยู่ที่:
 
 ```text
-release/exporter-csv-1.9.0.tar.gz
+release/xlsx-export-1.10.1.tar.gz
 ```
 
 ---
@@ -187,7 +206,7 @@ release/exporter-csv-1.9.0.tar.gz
 ## 🗂️ โครงสร้างโครงการ
 
 ```text
-exporter-csv-v1.9.0-open-source/
+xlsx-export-v1.10.1-open-source/
 ├── src/
 │   └── plugin.js          # Source bundle ที่จัดรูปแบบให้อ่านและแก้ไขได้
 ├── dist/
@@ -195,7 +214,7 @@ exporter-csv-v1.9.0-open-source/
 │   ├── schema.json
 │   └── package.json
 ├── release/
-│   └── exporter-csv-1.9.0.tar.gz
+│   └── xlsx-export-1.10.1.tar.gz
 ├── scripts/
 │   ├── build.mjs          # Build และอัปเดต Schema hash
 │   ├── verify.mjs         # ตรวจสอบความถูกต้องของ Plugin
@@ -275,7 +294,6 @@ npm run verify
 
 ## 👨‍💻 ผู้พัฒนา
 
-**Thanakrit Yaemsuk**  
-KWTeam OFFICIAL
+**Author:** `-`
 
 สร้างขึ้นเพื่อช่วยให้การส่งออกข้อมูลจาก Budibase มีความยืดหยุ่น เป็นมาตรฐาน และรองรับการใช้งานภาษาไทยอย่างสมบูรณ์

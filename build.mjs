@@ -26,6 +26,5 @@ await writeFile(schemaPath, `${JSON.stringify(schema, null, 2)}\n`)
 await copyFile(schemaPath, resolve(root, "dist/schema.json"))
 await copyFile(resolve(root, "package.json"), resolve(root, "dist/package.json"))
 
-console.log(`Built Export v${pkg.version}`)
+console.log(`Built XLSX-EXPORT v${pkg.version}`)
 console.log(`SHA-1 ${schema.hash}`)
-

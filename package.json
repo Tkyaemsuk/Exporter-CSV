@@ -1,8 +1,8 @@
 {
-  "name": "exporter-csv",
-  "version": "1.9.0",
+  "name": "xlsx-export",
+  "version": "1.10.1",
   "description": "Open-source Budibase 3.4.1 export component with styled document headers, images, merged rows and component-locked column design JSON",
-  "author": "Thanakrit Yaemsuk / KWTeam OFFICIAL",
+  "author": "-",
   "license": "MIT",
   "private": false,
   "type": "module",

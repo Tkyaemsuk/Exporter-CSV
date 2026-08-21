@@ -2,8 +2,8 @@
   "type": "component",
   "metadata": {},
   "schema": {
-    "name": "exporter-csv",
-    "friendlyName": "Exporter-Csv",
+    "name": "xlsx-export",
+    "friendlyName": "XLSX-EXPORT",
     "description": "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Includes Thai date-time formatting, column styling, multi-row merged document headers, watermark and footer.",
     "icon": "Download",
     "settings": [
@@ -672,6 +672,6 @@
       }
     ]
   },
-  "hash": "6e6c9c5c4b22c666de9cb0fa6a275639afaaeb72",
-  "version": "1.9.0"
+  "hash": "f717b28d2deced91a09f53b751517f198f256ad6",
+  "version": "1.10.1"
 }

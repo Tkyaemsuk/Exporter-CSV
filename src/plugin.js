@@ -154,10 +154,21 @@ var plugin = function(e, t, n) {
             headerBg: "",
             headerColor: "",
             bodyBg: "",
-            bodyColor: ""
+            bodyColor: "",
+            conditionalRules: []
         };
     }
     const S = [ "left", "center", "right" ], D = [ "auto", "text", "number", "date" ];
+    const conditionalOperators = [ "equals", "notEquals", "greaterThan", "greaterThanOrEqual", "lessThan", "lessThanOrEqual", "contains", "notContains", "startsWith", "endsWith", "empty", "notEmpty" ];
+    function normalizeConditionalRules(e) {
+        return Array.isArray(e) ? e.slice(0, 20).filter(e => e && "object" == typeof e).map(e => ({
+            operator: -1 !== conditionalOperators.indexOf(e.operator) ? e.operator : "equals",
+            value: null == e.value ? "" : String(e.value),
+            background: e.background ? String(e.background) : "#FFFFFF",
+            color: e.color ? String(e.color) : "#111827",
+            enabled: !1 !== e.enabled
+        })) : [];
+    }
     function M(e) {
         return Array.isArray(e) ? e.filter(e => e && "object" == typeof e).map(e => {
             const t = k(), n = null != e.field ? String(e.field) : null != e.sourceField ? String(e.sourceField) : "";
@@ -175,7 +186,8 @@ var plugin = function(e, t, n) {
                 headerBg: e.headerBg ? String(e.headerBg) : "",
                 headerColor: e.headerColor ? String(e.headerColor) : "",
                 bodyBg: e.bodyBg ? String(e.bodyBg) : "",
-                bodyColor: e.bodyColor ? String(e.bodyColor) : ""
+                bodyColor: e.bodyColor ? String(e.bodyColor) : "",
+                conditionalRules: normalizeConditionalRules(e.conditionalRules || e.conditions)
             };
         }) : [];
     }
@@ -213,7 +225,8 @@ var plugin = function(e, t, n) {
             e.datePattern && (t.datePattern = e.datePattern), e.tz && (t.tz = e.tz), null != e.decimals && (t.decimals = e.decimals), 
             e.align && "left" !== e.align && (t.align = e.align), e.width && (t.width = e.width), 
             e.headerBg && (t.headerBg = e.headerBg), e.headerColor && (t.headerColor = e.headerColor), 
-            e.bodyBg && (t.bodyBg = e.bodyBg), e.bodyColor && (t.bodyColor = e.bodyColor), t;
+            e.bodyBg && (t.bodyBg = e.bodyBg), e.bodyColor && (t.bodyColor = e.bodyColor), 
+            e.conditionalRules && e.conditionalRules.length && (t.conditionalRules = normalizeConditionalRules(e.conditionalRules)), t;
         });
         return Array.isArray(n) ? JSON.stringify({
             version: 3,
@@ -264,7 +277,8 @@ var plugin = function(e, t, n) {
         }(t, e.field);
         if (null == o || "" === o) return {
             text: "",
-            number: null
+            number: null,
+            raw: o
         };
         const r = a.dateSettings || {}, l = {
             pattern: e.datePattern || r.pattern,
@@ -277,26 +291,82 @@ var plugin = function(e, t, n) {
             const e = y(o, l);
             return {
                 text: null == e ? N(o) : e,
-                number: null
+                number: null,
+                raw: o
             };
         }
-        if ("number" === e.format) return z(o, e.decimals);
+        if ("number" === e.format) return Object.assign(z(o, e.decimals), {
+            raw: o
+        });
         if ("text" === e.format) return {
             text: N(o),
-            number: null
+            number: null,
+            raw: o
         };
-        if ("number" == typeof o) return z(o, e.decimals);
+        if ("number" == typeof o) return Object.assign(z(o, e.decimals), {
+            raw: o
+        });
         if (!1 !== a.autoDetectDates && (o instanceof Date || g(o) || b(o))) {
             const e = y(o, l);
             if (null != e) return {
                 text: e,
-                number: null
+                    number: null,
+                    raw: o
             };
         }
         return {
             text: N(o),
-            number: null
+            number: null,
+            raw: o
         };
+    }
+    function conditionalRuleMatches(e, t) {
+        if (!e || !1 === e.enabled) return !1;
+        const n = null == t ? "" : String(t), a = null == e.value ? "" : String(e.value), o = Number(t), r = Number(e.value), l = "" !== n.trim() && "" !== a.trim() && isFinite(o) && isFinite(r), s = n.toLocaleLowerCase(), i = a.toLocaleLowerCase();
+        switch (e.operator) {
+          case "notEquals":
+            return l ? o !== r : s !== i;
+
+          case "greaterThan":
+            return l ? o > r : n > a;
+
+          case "greaterThanOrEqual":
+            return l ? o >= r : n >= a;
+
+          case "lessThan":
+            return l ? o < r : n < a;
+
+          case "lessThanOrEqual":
+            return l ? o <= r : n <= a;
+
+          case "contains":
+            return -1 !== s.indexOf(i);
+
+          case "notContains":
+            return -1 === s.indexOf(i);
+
+          case "startsWith":
+            return 0 === s.indexOf(i);
+
+          case "endsWith":
+            return s.slice(-i.length) === i;
+
+          case "empty":
+            return "" === n.trim();
+
+          case "notEmpty":
+            return "" !== n.trim();
+
+          default:
+            return l ? o === r : s === i;
+        }
+    }
+    function resolveConditionalStyle(e, t) {
+        const n = normalizeConditionalRules(e && e.conditionalRules);
+        for (let e = 0; e < n.length; e++) if (conditionalRuleMatches(n[e], t)) return Object.assign({
+            index: e
+        }, n[e]);
+        return null;
     }
     function Y(e, t) {
         void 0 === t && (t = {});
@@ -760,18 +830,21 @@ var plugin = function(e, t, n) {
     }
     function ee(e) {
         let n, a, o = B(e[61], e[58], e[3]).text + "";
+        const conditionalStyle = e => resolveConditionalStyle(e[61], B(e[61], e[58], e[3]).raw);
         return {
             c() {
-                n = t.element("td"), a = t.text(o), t.set_style(n, "background", e[61].bodyBg || (e[5].stripeEnabled && e[60] % 2 == 1 ? e[5].stripeBg : e[5].bodyBg) || "#FFFFFF"), 
-                t.set_style(n, "color", e[61].bodyColor || e[5].bodyColor || "#111827"), t.set_style(n, "text-align", e[61].align || "left"), 
+                const r = conditionalStyle(e);
+                n = t.element("td"), a = t.text(o), t.set_style(n, "background", r && r.background || e[61].bodyBg || (e[5].stripeEnabled && e[60] % 2 == 1 ? e[5].stripeBg : e[5].bodyBg) || "#FFFFFF"), 
+                t.set_style(n, "color", r && r.color || e[61].bodyColor || e[5].bodyColor || "#111827"), t.set_style(n, "text-align", e[61].align || "left"), 
                 t.attr(n, "class", "svelte-lgwuc9");
             },
             m(e, o) {
                 t.insert(e, n, o), t.append(n, a);
             },
             p(e, r) {
-                776 & r[0] && o !== (o = B(e[61], e[58], e[3]).text + "") && t.set_data(a, o), 288 & r[0] && t.set_style(n, "background", e[61].bodyBg || (e[5].stripeEnabled && e[60] % 2 == 1 ? e[5].stripeBg : e[5].bodyBg) || "#FFFFFF"), 
-                288 & r[0] && t.set_style(n, "color", e[61].bodyColor || e[5].bodyColor || "#111827"), 
+                const l = conditionalStyle(e);
+                776 & r[0] && o !== (o = B(e[61], e[58], e[3]).text + "") && t.set_data(a, o), 808 & r[0] && t.set_style(n, "background", l && l.background || e[61].bodyBg || (e[5].stripeEnabled && e[60] % 2 == 1 ? e[5].stripeBg : e[5].bodyBg) || "#FFFFFF"), 
+                808 & r[0] && t.set_style(n, "color", l && l.color || e[61].bodyColor || e[5].bodyColor || "#111827"), 
                 256 & r[0] && t.set_style(n, "text-align", e[61].align || "left");
             },
             d(e) {
@@ -847,7 +920,7 @@ var plugin = function(e, t, n) {
         let n, a, o, r, l, s, i, d, c, u, p, m, f, h, g, b, v, y, x, w, C, _, F, k, S, D, M, $, T, z, N, B, Y, E, H, P, A, j, W, J, Z, X, q, G, ee, te, oe, re, le, se, ie, de, ce, ue, pe, me, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De = e[4]("designerTitle") + "", Me = e[2].length + "", $e = e[4]("rows") + "", Te = e[8].length + "", ze = e[4]("columns") + "", Ne = e[4]("addColumn") + "", Be = e[4]("fromData") + "", Ye = e[4]("copyJson") + "", Oe = e[4]("save") + "", Ee = e[4]("reset") + "", Ie = e[4]("previewTitle") + "", He = e[4]("previewNote", {
             n: e[9].length
         }) + "", Pe = e[4]("close") + "", Ae = e[4]("export") + "", je = e[6] && V(e), Ve = e[7] && R(e);
-        let headerButton, headerButtonText, headerButtonLabel = e[4]("headerDesigner") + "";
+        let headerButton, headerButtonText, headerButtonLabel = e[4]("headerDesigner") + "", conditionSpace, conditionButton, conditionButtonText, conditionButtonLabel = e[4]("conditionalFormatting") + "";
         function Re(e, t) {
             return 0 === e[0].length ? U : L;
         }
@@ -864,7 +937,7 @@ var plugin = function(e, t, n) {
                 g = t.text(ze), b = t.space(), je && je.c(), v = t.space(), y = t.element("button"), 
                 x = t.text("×"), C = t.space(), _ = t.element("div"), F = t.element("button"), k = t.text("+ "), 
                 S = t.text(Ne), D = t.space(), M = t.element("button"), $ = t.text("⟳ "), T = t.text(Be), 
-                z = t.space(), headerButton = t.element("button"), headerButtonText = t.text(headerButtonLabel), N = t.element("span"), B = t.space(), Ve && Ve.c(), Y = t.space(), 
+                z = t.space(), headerButton = t.element("button"), headerButtonText = t.text(headerButtonLabel), conditionSpace = t.space(), conditionButton = t.element("button"), conditionButtonText = t.text(conditionButtonLabel), N = t.element("span"), B = t.space(), Ve && Ve.c(), Y = t.space(), 
                 E = t.element("button"), H = t.text(Ye), P = t.space(), A = t.element("button"), 
                 j = t.text(Oe), W = t.space(), J = t.element("button"), Z = t.text(Ee), X = t.space(), 
                 q = t.element("div"), Ue.c(), G = t.space(), ee = t.element("div"), te = t.element("div"), 
@@ -877,7 +950,7 @@ var plugin = function(e, t, n) {
                 ye = t.space(), xe = t.element("button"), we = t.text(Pe), Ce = t.space(), _e = t.element("button"), 
                 Fe = t.text(Ae), t.attr(d, "class", "ec-sub svelte-lgwuc9"), t.attr(y, "class", "ec-x svelte-lgwuc9"), 
                 t.attr(y, "title", w = e[4]("close")), t.attr(o, "class", "ec-head svelte-lgwuc9"), 
-                t.attr(F, "class", "ec-btn svelte-lgwuc9"), t.attr(M, "class", "ec-btn svelte-lgwuc9"), t.attr(headerButton, "class", "ec-btn svelte-lgwuc9"), 
+                t.attr(F, "class", "ec-btn svelte-lgwuc9"), t.attr(M, "class", "ec-btn svelte-lgwuc9"), t.attr(headerButton, "class", "ec-btn svelte-lgwuc9"), t.attr(conditionButton, "class", "ec-btn svelte-lgwuc9"), 
                 t.attr(N, "class", "ec-spacer svelte-lgwuc9"), t.attr(E, "class", "ec-btn svelte-lgwuc9"), 
                 t.attr(A, "class", "ec-btn svelte-lgwuc9"), t.attr(J, "class", "ec-btn ec-danger svelte-lgwuc9"), 
                 t.attr(_, "class", "ec-toolbar svelte-lgwuc9"), t.attr(te, "class", "ec-preview-label svelte-lgwuc9"), 
@@ -894,7 +967,7 @@ var plugin = function(e, t, n) {
                 t.append(d, p), t.append(d, m), t.append(d, f), t.append(d, h), t.append(d, g), 
                 t.append(d, b), je && je.m(d, null), t.append(o, v), t.append(o, y), t.append(y, x), 
                 t.append(a, C), t.append(a, _), t.append(_, F), t.append(F, k), t.append(F, S), 
-                t.append(_, D), t.append(_, M), t.append(M, $), t.append(M, T), t.append(_, z), t.append(_, headerButton), t.append(headerButton, headerButtonText), 
+                t.append(_, D), t.append(_, M), t.append(M, $), t.append(M, T), t.append(_, z), t.append(_, headerButton), t.append(headerButton, headerButtonText), t.append(_, conditionSpace), t.append(_, conditionButton), t.append(conditionButton, conditionButtonText), 
                 t.append(_, N), t.append(_, B), Ve && Ve.m(_, null), t.append(_, Y), t.append(_, E), 
                 t.append(E, H), t.append(_, P), t.append(_, A), t.append(A, j), t.append(_, W), 
                 t.append(_, J), t.append(J, Z), t.append(a, X), t.append(a, q), Ue.m(q, null), t.append(q, G), 
@@ -905,7 +978,7 @@ var plugin = function(e, t, n) {
                 for (let e = 0; e < qe.length; e += 1) qe[e] && qe[e].m(fe, null);
                 t.append(fe, he), Ge && Ge.m(fe, null), t.append(a, ge), t.append(a, be), t.append(be, ve), 
                 t.append(be, ye), t.append(be, xe), t.append(xe, we), t.append(be, Ce), t.append(be, _e), 
-                t.append(_e, Fe), ke || (Se = [ t.listen(y, "click", e[21]), t.listen(F, "click", e[15]), t.listen(M, "click", e[22]), t.listen(headerButton, "click", e[56]), t.listen(E, "click", e[20]), t.listen(A, "click", e[23]), t.listen(J, "click", e[24]), t.listen(xe, "click", e[53]), t.listen(_e, "click", e[54]), t.listen(n, "click", t.self(e[55])) ], 
+                t.append(_e, Fe), ke || (Se = [ t.listen(y, "click", e[21]), t.listen(F, "click", e[15]), t.listen(M, "click", e[22]), t.listen(headerButton, "click", e[56]), t.listen(conditionButton, "click", e[57]), t.listen(E, "click", e[20]), t.listen(A, "click", e[23]), t.listen(J, "click", e[24]), t.listen(xe, "click", e[53]), t.listen(_e, "click", e[54]), t.listen(n, "click", t.self(e[55])) ], 
                 ke = !0);
             },
             p(e, n) {
@@ -914,7 +987,7 @@ var plugin = function(e, t, n) {
                 256 & n[0] && Te !== (Te = e[8].length + "") && t.set_data(f, Te), 16 & n[0] && ze !== (ze = e[4]("columns") + "") && t.set_data(g, ze), 
                 e[6] ? je ? je.p(e, n) : (je = V(e), je.c(), je.m(d, null)) : je && (je.d(1), je = null), 
                 16 & n[0] && w !== (w = e[4]("close")) && t.attr(y, "title", w), 16 & n[0] && Ne !== (Ne = e[4]("addColumn") + "") && t.set_data(S, Ne), 
-                16 & n[0] && Be !== (Be = e[4]("fromData") + "") && t.set_data(T, Be), 16 & n[0] && headerButtonLabel !== (headerButtonLabel = e[4]("headerDesigner") + "") && t.set_data(headerButtonText, headerButtonLabel), e[7] ? Ve ? Ve.p(e, n) : (Ve = R(e), 
+                16 & n[0] && Be !== (Be = e[4]("fromData") + "") && t.set_data(T, Be), 16 & n[0] && headerButtonLabel !== (headerButtonLabel = e[4]("headerDesigner") + "") && t.set_data(headerButtonText, headerButtonLabel), 16 & n[0] && conditionButtonLabel !== (conditionButtonLabel = e[4]("conditionalFormatting") + "") && t.set_data(conditionButtonText, conditionButtonLabel), e[7] ? Ve ? Ve.p(e, n) : (Ve = R(e), 
                 Ve.c(), Ve.m(_, Y)) : Ve && (Ve.d(1), Ve = null), 16 & n[0] && Ye !== (Ye = e[4]("copyJson") + "") && t.set_data(H, Ye), 
                 16 & n[0] && Oe !== (Oe = e[4]("save") + "") && t.set_data(j, Oe), 16 & n[0] && Ee !== (Ee = e[4]("reset") + "") && t.set_data(Z, Ee), 
                 Le === (Le = Re(e)) && Ue ? Ue.p(e, n) : (Ue.d(1), Ue = Le(e), Ue && (Ue.c(), Ue.m(q, G))), 
@@ -1079,7 +1152,9 @@ var plugin = function(e, t, n) {
             o(0, t[n].bodyColor = a.target.value, s), v(s);
         }, (e, t, n) => {
             o(0, t[n].bodyBg = "", s), o(0, t[n].bodyColor = "", s), v(s);
-        }, e => w(e.id, -1), e => w(e.id, 1), e => x(e.id), e => y(e.id), () => f("close"), () => f("export"), () => f("close"), () => f("headerdesign") ];
+        }, e => w(e.id, -1), e => w(e.id, 1), e => x(e.id), e => y(e.id), () => f("close"), () => f("export", {
+            columns: M(s)
+        }), () => f("close"), () => f("headerdesign"), () => f("conditionaldesign") ];
     }
     Y('.ec-overlay.svelte-lgwuc9.svelte-lgwuc9{position:fixed;inset:0;background:rgba(15, 23, 42, 0.45);display:flex;align-items:center;justify-content:center;z-index:999999;padding:24px;font-family:"Sarabun", "Noto Sans Thai", Tahoma, system-ui, sans-serif}.ec-modal.svelte-lgwuc9.svelte-lgwuc9{background:#fff;color:#111827;width:min(1240px, 96vw);max-height:88vh;border-radius:10px;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0, 0, 0, 0.3);overflow:hidden}.ec-head.svelte-lgwuc9.svelte-lgwuc9{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e5e7eb;background:linear-gradient(#f9fafb, #f1f5f9)}.ec-sub.svelte-lgwuc9.svelte-lgwuc9{display:block;font-size:12px;color:#6b7280;margin-top:2px}.ec-x.svelte-lgwuc9.svelte-lgwuc9{border:none;background:transparent;font-size:22px;line-height:1;cursor:pointer;color:#6b7280;padding:2px 8px;border-radius:6px}.ec-x.svelte-lgwuc9.svelte-lgwuc9:hover{background:#e5e7eb;color:#111827}.ec-toolbar.svelte-lgwuc9.svelte-lgwuc9,.ec-foot.svelte-lgwuc9.svelte-lgwuc9{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fbfdff;border-bottom:1px solid #eef2f7;flex-wrap:wrap}.ec-foot.svelte-lgwuc9.svelte-lgwuc9{border-bottom:none;border-top:1px solid #e5e7eb;background:#f9fafb}.ec-spacer.svelte-lgwuc9.svelte-lgwuc9{flex:1}.ec-toast.svelte-lgwuc9.svelte-lgwuc9{font-size:12px;color:#15803d;font-weight:600}.ec-btn.svelte-lgwuc9.svelte-lgwuc9{border:1px solid #d1d5db;background:#fff;color:#1f2937;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}.ec-btn.svelte-lgwuc9.svelte-lgwuc9:hover{background:#f3f4f6}.ec-primary.svelte-lgwuc9.svelte-lgwuc9{background:#16a34a;border-color:#16a34a;color:#fff}.ec-primary.svelte-lgwuc9.svelte-lgwuc9:hover{background:#15803d}.ec-danger.svelte-lgwuc9.svelte-lgwuc9{color:#dc2626}.ec-danger.svelte-lgwuc9.svelte-lgwuc9:hover{background:#fee2e2}.ec-body.svelte-lgwuc9.svelte-lgwuc9{padding:12px 16px 16px;overflow:auto}.ec-grid.svelte-lgwuc9.svelte-lgwuc9{display:grid;grid-template-columns:28px 44px minmax(120px, 1.3fr) minmax(110px, 1fr) 92px minmax(120px, 1fr) 96px 62px 68px 96px 96px 108px;gap:6px;align-items:center}.ec-grid-head.svelte-lgwuc9.svelte-lgwuc9{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;padding:4px 0 6px;position:sticky;top:0;background:#fff;z-index:2}.ec-grid-row.svelte-lgwuc9.svelte-lgwuc9{padding:3px 0}.ec-letter.svelte-lgwuc9.svelte-lgwuc9{text-align:center;font-weight:700;color:#2563eb;font-size:11px}.ec-check.svelte-lgwuc9.svelte-lgwuc9{justify-self:center;width:15px;height:15px;cursor:pointer}.ec-input.svelte-lgwuc9.svelte-lgwuc9{width:100%;box-sizing:border-box;padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;background:#fff;color:#111827;font-family:inherit}.ec-input.svelte-lgwuc9.svelte-lgwuc9:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37, 99, 235, 0.15)}.ec-narrow.svelte-lgwuc9.svelte-lgwuc9{text-align:center}.ec-colors.svelte-lgwuc9.svelte-lgwuc9,.ec-ops.svelte-lgwuc9.svelte-lgwuc9{display:flex;gap:2px;align-items:center;justify-content:center}.ec-colors.svelte-lgwuc9 input[type="color"].svelte-lgwuc9{width:26px;height:24px;padding:0;border:1px solid #d1d5db;border-radius:4px;background:none;cursor:pointer}.ec-mini.svelte-lgwuc9.svelte-lgwuc9{border:1px solid #e5e7eb;background:#f9fafb;border-radius:4px;width:23px;height:23px;cursor:pointer;font-size:10px;color:#374151;padding:0;line-height:1}.ec-mini.svelte-lgwuc9.svelte-lgwuc9:hover{background:#eef2f7}.ec-empty.svelte-lgwuc9.svelte-lgwuc9{padding:22px;text-align:center;color:#6b7280;border:1px dashed #d1d5db;border-radius:8px;margin:8px 0;font-size:13px}.ec-preview.svelte-lgwuc9.svelte-lgwuc9{margin-top:16px}.ec-preview-label.svelte-lgwuc9.svelte-lgwuc9{font-size:12px;color:#6b7280;margin-bottom:6px}.ec-table-wrap.svelte-lgwuc9.svelte-lgwuc9{overflow:auto;border:1px solid #cbd5e1;border-radius:8px;max-height:300px}.ec-table.svelte-lgwuc9.svelte-lgwuc9{border-collapse:collapse;font-size:12px;min-width:100%}.ec-table.svelte-lgwuc9 th.svelte-lgwuc9,.ec-table.svelte-lgwuc9 td.svelte-lgwuc9{border:1px solid #d7dde5;padding:5px 9px;white-space:nowrap;text-align:left}.ec-table.svelte-lgwuc9 thead th.svelte-lgwuc9{position:sticky;top:0;z-index:1;font-weight:700}.ec-norows.svelte-lgwuc9.svelte-lgwuc9{color:#9ca3af;text-align:center;font-style:italic}');
     class se extends t.SvelteComponent {
@@ -1112,6 +1187,8 @@ var plugin = function(e, t, n) {
             format: "รูปแบบไฟล์",
             designerTitle: "ออกแบบคอลัมน์",
             headerDesigner: "ออกแบบหัวเอกสาร",
+            conditionalFormatting: "กำหนดเงื่อนไขสี",
+            conditionalApplied: "ใช้เงื่อนไขสีแล้ว กรุณาคัดลอกค่าล็อกและ Publish",
             headerDesignApplied: "ใช้ดีไซน์หัวเอกสารแล้ว และคัดลอกค่าล็อกไว้ให้แล้ว",
             addColumn: "เพิ่มคอลัมน์",
             fromData: "สร้างจากข้อมูล",
@@ -1166,6 +1243,8 @@ var plugin = function(e, t, n) {
             format: "Format",
             designerTitle: "Column designer",
             headerDesigner: "Document header",
+            conditionalFormatting: "Conditional colours",
+            conditionalApplied: "Conditional colours applied. Copy the locked value and Publish.",
             headerDesignApplied: "Document header applied and the locked design value was copied",
             addColumn: "Add column",
             fromData: "From data",
@@ -1330,7 +1409,30 @@ var plugin = function(e, t, n) {
         return String(null == e ? "" : e).replace(ye, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
     }
     function we(e) {
-        const t = String(null == e ? "" : e).trim(), n = /^#?([0-9a-fA-F]{6})$/.exec(t);
+        const namedColors = {
+            black: "000000",
+            white: "FFFFFF",
+            red: "FF0000",
+            green: "008000",
+            blue: "0000FF",
+            yellow: "FFFF00",
+            orange: "FFA500",
+            purple: "800080",
+            pink: "FFC0CB",
+            gray: "808080",
+            grey: "808080",
+            cyan: "00FFFF",
+            aqua: "00FFFF",
+            lime: "00FF00",
+            navy: "000080",
+            teal: "008080",
+            maroon: "800000",
+            olive: "808000",
+            silver: "C0C0C0"
+        };
+        const t = String(null == e ? "" : e).trim(), named = namedColors[t.toLowerCase()];
+        if (named) return named;
+        const n = /^#?([0-9a-fA-F]{6})$/.exec(t);
         if (n) return n[1].toUpperCase();
         const a = /^#?([0-9a-fA-F]{3})$/.exec(t);
         if (a) {
@@ -1548,6 +1650,93 @@ var plugin = function(e, t, n) {
             const t = parseDocumentHeaderRows(o, n);
             "function" == typeof e.onApply && e.onApply(t), b();
         }), g();
+    }
+    function openConditionalFormattingDesigner(e) {
+        const t = "th" === e.language, n = M(e.columns || []), a = (e.rows || []).slice(0, 8), o = e.renderContext || {}, r = e.style || {}, l = document.createElement("div");
+        l.className = "ec-cf-overlay", l.innerHTML = '<div class="ec-cf-modal" role="dialog" aria-modal="true"><div class="ec-cf-head"><div><strong></strong><span></span></div><button type="button" class="ec-cf-close">×</button></div><div class="ec-cf-body"><div class="ec-cf-editor"></div><div class="ec-cf-preview-title"></div><div class="ec-cf-preview"></div></div><div class="ec-cf-foot"><button type="button" class="ec-cf-btn ec-cf-cancel"></button><button type="button" class="ec-cf-btn ec-cf-primary ec-cf-apply"></button></div></div>';
+        const s = document.createElement("style");
+        s.textContent = ".ec-cf-overlay{position:fixed;inset:0;z-index:1000002;background:rgba(15,23,42,.58);display:flex;align-items:center;justify-content:center;padding:18px;font-family:Sarabun,Tahoma,sans-serif}.ec-cf-modal{width:min(1180px,97vw);max-height:94vh;background:#fff;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;color:#111827}.ec-cf-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#f8fafc;border-bottom:1px solid #e5e7eb}.ec-cf-head span{display:block;font-size:12px;color:#64748b;margin-top:3px}.ec-cf-close{border:0;background:transparent;font-size:24px;cursor:pointer;color:#64748b}.ec-cf-body{padding:12px 16px;overflow:auto}.ec-cf-column{border:1px solid #dbe2ea;border-radius:9px;margin-bottom:10px;background:#f8fafc;overflow:hidden}.ec-cf-columnbar{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #e5e7eb}.ec-cf-columnbar strong{flex:1}.ec-cf-rules{padding:8px;display:grid;gap:7px}.ec-cf-rule{display:grid;grid-template-columns:74px minmax(150px,1fr) minmax(130px,1fr) 90px 90px 34px;gap:7px;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:7px}.ec-cf-rule select,.ec-cf-rule input[type=text]{box-sizing:border-box;width:100%;min-height:31px;border:1px solid #cbd5e1;border-radius:5px;padding:4px 6px;font:inherit;font-size:12px}.ec-cf-rule input[type=color]{width:100%;height:31px;padding:0;border:1px solid #cbd5e1;border-radius:5px}.ec-cf-enabled{font-size:11px;white-space:nowrap}.ec-cf-btn{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer}.ec-cf-btn:hover{background:#f1f5f9}.ec-cf-primary{background:#16a34a;border-color:#16a34a;color:#fff}.ec-cf-danger{color:#dc2626}.ec-cf-empty{padding:10px;color:#64748b;font-size:12px}.ec-cf-preview-title{font-size:12px;font-weight:700;color:#475569;margin:14px 0 6px}.ec-cf-preview{overflow:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff}.ec-cf-preview table{border-collapse:collapse;min-width:100%;font-size:12px}.ec-cf-preview th,.ec-cf-preview td{border:1px solid #d7dde5;padding:5px 8px;white-space:nowrap}.ec-cf-foot{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid #e5e7eb;background:#f8fafc}@media(max-width:850px){.ec-cf-rule{grid-template-columns:1fr 1fr}.ec-cf-enabled{grid-column:1/-1}}";
+        document.head.appendChild(s), document.body.appendChild(l);
+        const i = e => l.querySelector(e), d = i(".ec-cf-head strong"), c = i(".ec-cf-head span"), u = i(".ec-cf-editor"), p = i(".ec-cf-preview-title"), m = i(".ec-cf-cancel"), f = i(".ec-cf-apply"), h = [ [ "equals", t ? "เท่ากับ" : "Equals" ], [ "notEquals", t ? "ไม่เท่ากับ" : "Not equal" ], [ "greaterThan", t ? "มากกว่า" : "Greater than" ], [ "greaterThanOrEqual", t ? "มากกว่าหรือเท่ากับ" : "Greater or equal" ], [ "lessThan", t ? "น้อยกว่า" : "Less than" ], [ "lessThanOrEqual", t ? "น้อยกว่าหรือเท่ากับ" : "Less or equal" ], [ "contains", t ? "มีข้อความ" : "Contains" ], [ "notContains", t ? "ไม่มีข้อความ" : "Does not contain" ], [ "startsWith", t ? "ขึ้นต้นด้วย" : "Starts with" ], [ "endsWith", t ? "ลงท้ายด้วย" : "Ends with" ], [ "empty", t ? "ค่าว่าง" : "Is empty" ], [ "notEmpty", t ? "ไม่ว่าง" : "Is not empty" ] ];
+        d.textContent = t ? "กำหนดเงื่อนไขสีของคอลัมน์" : "Column conditional colours", c.textContent = t ? "กฎเรียงจากบนลงล่าง และใช้กฎแรกที่ตรงเงื่อนไข" : "Rules run top-to-bottom; the first match wins", p.textContent = t ? "ตัวอย่างข้อมูล" : "Data preview", m.textContent = t ? "ยกเลิก" : "Cancel", f.textContent = t ? "ใช้เงื่อนไข" : "Apply conditions";
+        function g() {
+            const e = i(".ec-cf-preview");
+            e.innerHTML = "";
+            const t = document.createElement("table"), s = document.createElement("thead"), d = document.createElement("tr"), c = n.filter(e => !1 !== e.include);
+            c.forEach(e => {
+                const t = document.createElement("th");
+                t.textContent = e.header || C(e.field), t.style.background = e.headerBg || r.headerBg || "#1F6FEB", t.style.color = e.headerColor || r.headerColor || "#FFFFFF", d.appendChild(t);
+            }), s.appendChild(d), t.appendChild(s);
+            const u = document.createElement("tbody");
+            a.forEach((e, t) => {
+                const n = document.createElement("tr");
+                c.forEach(a => {
+                    const s = B(a, e, o), i = resolveConditionalStyle(a, s.raw), d = document.createElement("td");
+                    d.textContent = s.text, d.style.background = i && i.background || a.bodyBg || (r.stripeEnabled && t % 2 == 1 ? r.stripeBg : r.bodyBg) || "#FFFFFF", d.style.color = i && i.color || a.bodyColor || r.bodyColor || "#111827", d.style.textAlign = a.align || "left", n.appendChild(d);
+                }), u.appendChild(n);
+            }), t.appendChild(u), e.appendChild(t);
+        }
+        function b() {
+            u.innerHTML = "", n.forEach((e, n) => {
+                e.conditionalRules = normalizeConditionalRules(e.conditionalRules);
+                const a = document.createElement("div");
+                a.className = "ec-cf-column";
+                const o = document.createElement("div");
+                o.className = "ec-cf-columnbar";
+                const r = document.createElement("strong");
+                r.textContent = re(n) + " — " + (e.header || C(e.field));
+                const l = document.createElement("button");
+                l.className = "ec-cf-btn", l.textContent = t ? "+ เพิ่มเงื่อนไข" : "+ Add rule", l.addEventListener("click", () => {
+                    e.conditionalRules.push({
+                        operator: "equals",
+                        value: "",
+                        background: "#FFFFFF",
+                        color: "#111827",
+                        enabled: !1
+                    }), b();
+                }), o.append(r, l), a.appendChild(o);
+                const s = document.createElement("div");
+                s.className = "ec-cf-rules", e.conditionalRules.length || (s.innerHTML = '<div class="ec-cf-empty">' + (t ? "ยังไม่มีเงื่อนไขสำหรับคอลัมน์นี้" : "No rules for this column") + "</div>"), e.conditionalRules.forEach((n, o) => {
+                    const r = document.createElement("div");
+                    r.className = "ec-cf-rule";
+                    const l = document.createElement("label"), s = document.createElement("input");
+                    s.type = "checkbox", s.checked = !1 !== n.enabled, s.addEventListener("change", () => {
+                        n.enabled = s.checked, g();
+                    }), l.className = "ec-cf-enabled", l.append(s, document.createTextNode(t ? " ใช้งาน" : " Enabled"));
+                    const i = document.createElement("select");
+                    h.forEach(e => {
+                        const t = document.createElement("option");
+                        t.value = e[0], t.textContent = e[1], i.appendChild(t);
+                    }), i.value = n.operator, i.addEventListener("change", () => {
+                        n.operator = i.value, b();
+                    });
+                    const d = document.createElement("input");
+                    d.type = "text", d.value = n.value || "", d.placeholder = t ? "ค่าที่ต้องการเปรียบเทียบ" : "Comparison value", d.disabled = "empty" === n.operator || "notEmpty" === n.operator, d.addEventListener("input", () => {
+                        n.value = d.value, g();
+                    });
+                    const c = document.createElement("input");
+                    c.type = "color", c.value = /^#[0-9a-f]{6}$/i.test(n.background) ? n.background : "#FF0000", c.title = t ? "สีพื้นหลัง" : "Background", c.addEventListener("input", () => {
+                        n.background = c.value, g();
+                    });
+                    const u = document.createElement("input");
+                    u.type = "color", u.value = /^#[0-9a-f]{6}$/i.test(n.color) ? n.color : "#FFFFFF", u.title = t ? "สีข้อความ" : "Text colour", u.addEventListener("input", () => {
+                        n.color = u.value, g();
+                    });
+                    const p = document.createElement("button");
+                    p.className = "ec-cf-btn ec-cf-danger", p.textContent = "×", p.title = t ? "ลบเงื่อนไข" : "Delete rule", p.addEventListener("click", () => {
+                        e.conditionalRules.splice(o, 1), b();
+                    }), r.append(l, i, d, c, u, p), s.appendChild(r);
+                }), a.appendChild(s), u.appendChild(a);
+            }), g();
+        }
+        function v() {
+            l.remove(), s.remove();
+        }
+        i(".ec-cf-close").addEventListener("click", v), m.addEventListener("click", v), l.addEventListener("click", e => {
+            e.target === l && v();
+        }), f.addEventListener("click", () => {
+            "function" == typeof e.onApply && e.onApply(M(n)), v();
+        }), b();
     }
     var Se = Uint8Array, De = Uint16Array, Me = Int32Array, $e = new Se([ 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0 ]), Te = new Se([ 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 0, 0 ]), ze = new Se([ 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 ]), Ne = function(e, t) {
         for (var n = new De(31), a = 0; a < 31; ++a) n[a] = t += 1 << e[a - 1];
@@ -2031,11 +2220,30 @@ var plugin = function(e, t, n) {
             currentRow++;
         });
         const tableHeaderRow = currentRow;
-        $.push('<row r="' + tableHeaderRow + '" ht="22" customHeight="1">' + e.header.map((e, t) => '<c r="' + xt(t) + tableHeaderRow + '" s="' + (_[t] ? _[t].header : 0) + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e) + "</t></is></c>").join("") + "</row>"), 
+        $.push('<row r="' + tableHeaderRow + '" ht="22" customHeight="1">' + e.header.map((e, t) => '<c r="' + xt(t) + tableHeaderRow + '" s="' + (_[t] ? _[t].header : 0) + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e) + "</t></is></c>").join("") + "</row>");
+        const workbookFontName = o, workbookFontSize = r;
         e.body.forEach((e, t) => {
             const n = tableHeaderRow + t + 1, o = a.stripeEnabled && t % 2 == 1, r = e.map((e, t) => {
-                const a = _[t], r = a ? o ? a.stripe : a.body : 0, l = xt(t) + n;
-                return null != e.number && isFinite(e.number) ? '<c r="' + l + '" s="' + r + '"><v>' + e.number + "</v></c>" : e.text ? '<c r="' + l + '" s="' + r + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e.text) + "</t></is></c>" : '<c r="' + l + '" s="' + r + '"/>';
+                const a = _[t], conditional = e.conditionalStyle || resolveConditionalStyle(l[t], e.raw);
+                let styleId = a ? o ? a.stripe : a.body : 0;
+                if (conditional && l[t]) {
+                    const column = l[t], fontId = h.add(Ct({
+                        size: workbookFontSize,
+                        name: workbookFontName,
+                        color: we(conditional.color) || we(column.bodyColor) || u
+                    })), fillId = g.add(_t(we(conditional.background) || we(column.bodyBg) || (o ? p : c))), fmtId = "number" === column.format && null != column.decimals ? w(column.decimals) : 0;
+                    styleId = C({
+                        fontId: fontId,
+                        fillId: fillId,
+                        borderId: 1,
+                        align: column.align && "left" !== column.align ? column.align : null,
+                        vertical: "top",
+                        wrap: !0,
+                        fmtId: fmtId
+                    });
+                }
+                const cellRef = xt(t) + n;
+                return null != e.number && isFinite(e.number) ? '<c r="' + cellRef + '" s="' + styleId + '"><v>' + e.number + "</v></c>" : e.text ? '<c r="' + cellRef + '" s="' + styleId + '" t="inlineStr"><is><t xml:space="preserve">' + xe(e.text) + "</t></is></c>" : '<c r="' + cellRef + '" s="' + styleId + '"/>';
             }).join("");
             $.push('<row r="' + n + '">' + r + "</row>");
         });
@@ -2241,7 +2449,10 @@ var plugin = function(e, t, n) {
                     h.push('<Style ss:ID="h' + t + '"><Alignment ss:Horizontal="' + m + '" ss:Vertical="Center" ss:WrapText="1"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + l + '" ss:Bold="' + (!1 === a.headerBold ? "0" : "1") + '"/><Interior ss:Color="' + n + '" ss:Pattern="Solid"/>' + f + "</Style>");
                     const g = Ce(e.bodyBg, d), b = Ce(e.bodyColor, c), v = a.stripeEnabled ? Ce(e.bodyBg, u) : g;
                     h.push('<Style ss:ID="d' + t + '"><Alignment ss:Horizontal="' + p + '" ss:Vertical="Top"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + b + '"/><Interior ss:Color="' + g + '" ss:Pattern="Solid"/>' + f + "</Style>"), 
-                    h.push('<Style ss:ID="s' + t + '"><Alignment ss:Horizontal="' + p + '" ss:Vertical="Top"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + b + '"/><Interior ss:Color="' + v + '" ss:Pattern="Solid"/>' + f + "</Style>");
+                    h.push('<Style ss:ID="s' + t + '"><Alignment ss:Horizontal="' + p + '" ss:Vertical="Top"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + b + '"/><Interior ss:Color="' + v + '" ss:Pattern="Solid"/>' + f + "</Style>"), 
+                    normalizeConditionalRules(e.conditionalRules).forEach((e, n) => {
+                        h.push('<Style ss:ID="c' + t + "_" + n + '"><Alignment ss:Horizontal="' + p + '" ss:Vertical="Top"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + Ce(e.color, b) + '"/><Interior ss:Color="' + Ce(e.background, g) + '" ss:Pattern="Solid"/>' + f + "</Style>");
+                    });
                 });
                 const g = n.footer;
                 if (g) {
@@ -2258,8 +2469,8 @@ var plugin = function(e, t, n) {
                     return '<Column ss:Index="' + (n + 1) + '" ss:AutoFitWidth="0" ss:Width="' + Math.round(7 * a * .75) + '"/>';
                 }).join(""), v = '<Row ss:Height="22">' + e.header.map((e, t) => '<Cell ss:StyleID="h' + t + '"><Data ss:Type="String">' + xe(e) + "</Data></Cell>").join("") + "</Row>", y = e.body.map((e, t) => {
                     const n = a.stripeEnabled && t % 2 == 1 ? "s" : "d", o = e.map((e, t) => {
-                        const a = null != e.number && isFinite(e.number), o = a ? "Number" : "String", r = a ? e.number : xe(e.text);
-                        return '<Cell ss:StyleID="' + n + t + '"><Data ss:Type="' + o + '">' + r + "</Data></Cell>";
+                        const a = null != e.number && isFinite(e.number), o = a ? "Number" : "String", r = a ? e.number : xe(e.text), conditional = e.conditionalStyle || resolveConditionalStyle(l[t], e.raw), styleId = conditional ? "c" + t + "_" + conditional.index : n + t;
+                        return '<Cell ss:StyleID="' + styleId + '"><Data ss:Type="' + o + '">' + r + "</Data></Cell>";
                     }).join("");
                     return "<Row>" + o + "</Row>";
                 }).join("");
@@ -2316,7 +2527,7 @@ var plugin = function(e, t, n) {
                 e.align && "left" !== e.align && o.push("text-align:" + e.align), e.width && o.push("width:" + 8 * e.width + "px"), 
                 o.length && b.push(".ec-data-table tbody td:nth-child(" + n + "){" + o.join(";") + "}");
             });
-            const v = a.stripeEnabled ? ".ec-data-table tbody tr:nth-child(even) td{background:" + u + "}" : "", y = h ? [ ".ec-watermark{", "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);", "width:" + (Number(h.size) > 0 ? Number(h.size) : 55) + "%;", "opacity:" + (Number(h.opacity) >= 0 ? Number(h.opacity) : 12) / 100 + ";", "z-index:0;pointer-events:none;user-select:none;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", ".ec-watermark img{width:100%;height:auto;display:block}" ].join("") : "", x = g ? [ ".ec-footer{", "position:fixed;bottom:0;left:0;right:0;", "display:flex;justify-content:space-between;align-items:flex-end;gap:16px;", "padding:6px 0;", "font-size:" + (Number(g.fontSize) > 0 ? Number(g.fontSize) : 10) + "pt;", "color:" + ve(g.color, "#6B7280") + ";", "background:transparent;z-index:2;", "}", ".ec-footer .ec-right{text-align:right}" ].join("") : "", w = [ "@page{size:A4 landscape;margin:14mm 12mm 18mm}", "*{box-sizing:border-box}", "html,body{margin:0;padding:0}", "body{", "font-family:'" + o + "','Sarabun','TH Sarabun New','Noto Sans Thai',Tahoma,sans-serif;", "font-size:" + r + "pt;color:" + c + ";background:#fff;", "padding:14mm 12mm 18mm;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", y, ".ec-sheet{position:relative;z-index:1}", ".ec-document-header{position:relative;z-index:2;margin:0 0 10px}", ".ec-document-header-image{display:flex}", ".ec-document-header-image img{height:auto;max-width:100%;display:block}", ".ec-document-header table{table-layout:fixed}", "table{border-collapse:collapse;width:100%;table-layout:auto}", "thead{display:table-header-group}", "tfoot{display:table-footer-group}", "tr{page-break-inside:avoid;break-inside:avoid}", "th,td{border:1px solid " + p + ";padding:4px 8px;vertical-align:top;word-break:break-word}", ".ec-data-table thead th{", "background:" + s + ";color:" + i + ";", "text-align:" + m + ";", "font-weight:" + (!1 === a.headerBold ? "400" : "700") + ";", "}", ".ec-data-table tbody td{background:" + d + ";color:" + c + "}", v, b.join(""), x ].join(""), C = e.header.map(e => "<th>" + be(e) + "</th>").join(""), _ = e.body.map(e => "<tr>" + e.map(e => "<td>" + be(e.text) + "</td>").join("") + "</tr>").join(""), documentHeaderHtml = documentHeader ? [ '<div class="ec-document-header">', documentHeader.image && documentHeader.image.dataUrl ? '<div class="ec-document-header-image" style="justify-content:' + ("right" === documentHeader.imagePosition ? "flex-end" : "center" === documentHeader.imagePosition ? "center" : "flex-start") + ";margin-bottom:" + (Number(documentHeader.imageGap) || 0) + 'px"><img src="' + be(documentHeader.image.dataUrl) + '" alt="" style="width:' + (Number(documentHeader.imageWidth) || 120) + 'px"></div>' : "", documentHeader.rows && documentHeader.rows.length ? '<table><tbody>' + documentHeader.rows.map(e => '<tr style="height:' + (Number(e.height) || 24) + 'px">' + e.cells.map(e => '<td colspan="' + (Number(e.colspan) || 1) + '" style="' + be(documentHeaderCellStyle(e)) + '">' + be(e.text) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" : "", "</div>" ].join("") : "", F = [];
+            const v = a.stripeEnabled ? ".ec-data-table tbody tr:nth-child(even) td{background:" + u + "}" : "", y = h ? [ ".ec-watermark{", "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);", "width:" + (Number(h.size) > 0 ? Number(h.size) : 55) + "%;", "opacity:" + (Number(h.opacity) >= 0 ? Number(h.opacity) : 12) / 100 + ";", "z-index:0;pointer-events:none;user-select:none;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", ".ec-watermark img{width:100%;height:auto;display:block}" ].join("") : "", x = g ? [ ".ec-footer{", "position:fixed;bottom:0;left:0;right:0;", "display:flex;justify-content:space-between;align-items:flex-end;gap:16px;", "padding:6px 0;", "font-size:" + (Number(g.fontSize) > 0 ? Number(g.fontSize) : 10) + "pt;", "color:" + ve(g.color, "#6B7280") + ";", "background:transparent;z-index:2;", "}", ".ec-footer .ec-right{text-align:right}" ].join("") : "", w = [ "@page{size:A4 landscape;margin:14mm 12mm 18mm}", "*{box-sizing:border-box}", "html,body{margin:0;padding:0}", "body{", "font-family:'" + o + "','Sarabun','TH Sarabun New','Noto Sans Thai',Tahoma,sans-serif;", "font-size:" + r + "pt;color:" + c + ";background:#fff;", "padding:14mm 12mm 18mm;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", y, ".ec-sheet{position:relative;z-index:1}", ".ec-document-header{position:relative;z-index:2;margin:0 0 10px}", ".ec-document-header-image{display:flex}", ".ec-document-header-image img{height:auto;max-width:100%;display:block}", ".ec-document-header table{table-layout:fixed}", "table{border-collapse:collapse;width:100%;table-layout:auto}", "thead{display:table-header-group}", "tfoot{display:table-footer-group}", "tr{page-break-inside:avoid;break-inside:avoid}", "th,td{border:1px solid " + p + ";padding:4px 8px;vertical-align:top;word-break:break-word}", ".ec-data-table thead th{", "background:" + s + ";color:" + i + ";", "text-align:" + m + ";", "font-weight:" + (!1 === a.headerBold ? "400" : "700") + ";", "}", ".ec-data-table tbody td{background:" + d + ";color:" + c + "}", v, b.join(""), x ].join(""), C = e.header.map(e => "<th>" + be(e) + "</th>").join(""), _ = e.body.map((e, t) => "<tr>" + e.map((e, n) => { const conditional = e.conditionalStyle || resolveConditionalStyle(f[n], e.raw), styles = []; return conditional && conditional.background && styles.push("background:" + conditional.background), conditional && conditional.color && styles.push("color:" + conditional.color), '<td' + (styles.length ? ' style="' + be(styles.join(";")) + '"' : "") + ">" + be(e.text) + "</td>"; }).join("") + "</tr>").join(""), documentHeaderHtml = documentHeader ? [ '<div class="ec-document-header">', documentHeader.image && documentHeader.image.dataUrl ? '<div class="ec-document-header-image" style="justify-content:' + ("right" === documentHeader.imagePosition ? "flex-end" : "center" === documentHeader.imagePosition ? "center" : "flex-start") + ";margin-bottom:" + (Number(documentHeader.imageGap) || 0) + 'px"><img src="' + be(documentHeader.image.dataUrl) + '" alt="" style="width:' + (Number(documentHeader.imageWidth) || 120) + 'px"></div>' : "", documentHeader.rows && documentHeader.rows.length ? '<table><tbody>' + documentHeader.rows.map(e => '<tr style="height:' + (Number(e.height) || 24) + 'px">' + e.cells.map(e => '<td colspan="' + (Number(e.colspan) || 1) + '" style="' + be(documentHeaderCellStyle(e)) + '">' + be(e.text) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" : "", "</div>" ].join("") : "", F = [];
             return F.push("<!DOCTYPE html>"), F.push('<html lang="' + be(n.lang || "th") + '">'), 
             F.push("<head>"), F.push('<meta charset="utf-8">'), F.push('<meta name="viewport" content="width=device-width,initial-scale=1">'), 
             F.push("<title>" + be(l) + "</title>"), F.push("<style>" + w + "</style>"), F.push("</head>"), 
@@ -2547,7 +2758,7 @@ var plugin = function(e, t, n) {
                 style: e[23],
                 hasLocalOverride: e[9]
             }
-        }), n.$on("change", e[31]), n.$on("regenerate", e[32]), n.$on("save", e[33]), n.$on("reset", e[34]), n.$on("headerdesign", e[114]), 
+        }), n.$on("change", e[31]), n.$on("regenerate", e[32]), n.$on("save", e[33]), n.$on("reset", e[34]), n.$on("headerdesign", e[114]), n.$on("conditionaldesign", e[115]), 
         n.$on("export", e[107]), n.$on("close", e[108]), {
             c() {
                 t.create_component(n.$$.fragment);
@@ -2704,10 +2915,10 @@ var plugin = function(e, t, n) {
             }
             o(9, tt = !0), vt(r("saved"));
         }
-        async function yt(e) {
+        async function yt(e, t) {
             if (nt) return;
             o(17, lt = !1);
-            const t = e || rt || de || "csv";
+            const n = e || rt || de || "csv";
             o(15, nt = !0), o(16, at = r("exporting"));
             try {
                 const e = await async function() {
@@ -2741,7 +2952,7 @@ var plugin = function(e, t, n) {
                         if (i(r && r.rows || []), n.length === t) break;
                     }
                     return n;
-                }(), n = e.slice(0, Math.max(1, Number(L) || 1e4)), a = b.length ? b : F(_(u, n, J), u);
+                }(), rowData = e.slice(0, Math.max(1, Number(L) || 1e4)), a = t && t.length ? M(t) : et.length ? M(et) : b.length ? M(b) : F(_(u, rowData, J), u);
                 if (!a.length) return void bt(r("noData"));
                 const o = function(e, t, n) {
                     const a = function(e) {
@@ -2749,22 +2960,25 @@ var plugin = function(e, t, n) {
                     }(e);
                     return {
                         header: a.map(e => null != e.header && "" !== e.header ? e.header : C(e.field)),
-                        body: (t || []).map(e => a.map(t => B(t, e, n))),
+                        body: (t || []).map(e => a.map(t => {
+                            const a = B(t, e, n);
+                            return a.conditionalStyle = resolveConditionalStyle(t, a.raw), a;
+                        })),
                         columns: a
                     };
-                }(a, n, k);
+                }(a, rowData, k);
                 if (!o.body.length) return void bt(r("noRows"));
-                let l = null;
-                Fe && -1 !== [ "xlsx", "html", "pdf" ].indexOf(t) && (l = await me(Fe), l ? (l.opacity = ke, 
-                l.size = Se) : vt(r("watermarkFailed")));
+                let watermark = null;
+                Fe && -1 !== [ "xlsx", "html", "pdf" ].indexOf(n) && (watermark = await me(Fe), watermark ? (watermark.opacity = ke, 
+                watermark.size = Se) : vt(r("watermarkFailed")));
                 let documentHeader = null;
                 const headerRows = parseDocumentHeaderRows(currentHeaderRows(), o.columns.length), hasDocumentHeader = headerRows.length > 0;
-                if (hasDocumentHeader && -1 !== [ "xlsx", "xls", "html", "pdf" ].indexOf(t)) {
+                if (hasDocumentHeader && -1 !== [ "xlsx", "xls", "html", "pdf" ].indexOf(n)) {
                     documentHeader = {
                         rows: headerRows
                     };
                 }
-                const i = await Bt(o, t, {
+                const exportResult = await Bt(o, n, {
                     fileName: le,
                     appendTimestamp: se,
                     timezone: q,
@@ -2777,16 +2991,16 @@ var plugin = function(e, t, n) {
                     fontSize: _e,
                     style: S,
                     footer: gt(),
-                    watermark: l,
+                    watermark: watermark,
                     documentHeader: documentHeader,
                     title: le
                 });
                 vt(r("exported", {
-                    n: i.rowCount
+                    n: exportResult.rowCount
                 })), "function" == typeof Le && Le({
-                    rowCount: i.rowCount,
-                    fileName: i.fileName,
-                    format: i.format
+                    rowCount: exportResult.rowCount,
+                    fileName: exportResult.fileName,
+                    format: exportResult.format
                 });
             } catch (e) {
                 bt(e && e.message || String(e));
@@ -2901,7 +3115,7 @@ var plugin = function(e, t, n) {
         }, xt, function(e) {
             if (!lt) return;
             e.target.closest && e.target.closest(".ec-format") || o(17, lt = !1);
-        }, H, P, A, j, V, R, L, U, W, J, Z, q, G, Q, K, ee, te, ne, oe, re, le, se, de, ue, pe, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De, Me, $e, Te, ze, Ne, Be, Ye, Ie, He, Pe, Ae, Le, Ue, rt, st, it, ct, s, d, u, w, x, f, g, m, i, I, () => yt(), e => xt(e.value), () => yt(), () => o(14, Ke = !1), showDocumentHeader, documentHeaderImage, documentHeaderImagePosition, documentHeaderImageWidth, documentHeaderRows, function() {
+        }, H, P, A, j, V, R, L, U, W, J, Z, q, G, Q, K, ee, te, ne, oe, re, le, se, de, ue, pe, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De, Me, $e, Te, ze, Ne, Be, Ye, Ie, He, Pe, Ae, Le, Ue, rt, st, it, ct, s, d, u, w, x, f, g, m, i, I, () => yt(), e => xt(e.value), e => yt(null, e && e.detail && e.detail.columns), () => o(14, Ke = !1), showDocumentHeader, documentHeaderImage, documentHeaderImagePosition, documentHeaderImageWidth, documentHeaderRows, function() {
             const e = (et.length ? et : b || []).filter(e => !1 !== e.include).length || p.length || 1;
             openDocumentHeaderDesigner({
                 rows: currentHeaderRows(),
@@ -2909,6 +3123,18 @@ var plugin = function(e, t, n) {
                 language: ae,
                 onApply: e => {
                     headerOverrideRows = e, o(9, tt = !0), copyLockedDesign().then(() => vt(r("headerDesignApplied"))).catch(e => bt(e && e.message || String(e)));
+                }
+            });
+        }, function() {
+            const e = et.length ? et : b || [];
+            openConditionalFormattingDesigner({
+                columns: e,
+                rows: c,
+                renderContext: k,
+                style: S,
+                language: ae,
+                onApply: e => {
+                    o(8, et = e), o(9, tt = !0), vt(r("conditionalApplied"));
                 }
             });
         } ];
@@ -2984,7 +3210,7 @@ var plugin = function(e, t, n) {
             }, null, [ -1, -1, -1, -1, -1 ]);
         }
     }
-    var Xt = "exporter-csv", qt = "1.9.0";
+    var Xt = "xlsx-export", qt = "1.10.6";
     function Gt(e) {
         let n;
         const a = e[7].default, o = t.create_slot(a, e, e[6], null);
@@ -3371,8 +3597,8 @@ var plugin = function(e, t, n) {
         type: "component",
         metadata: {},
         schema: {
-            name: "exporter-csv",
-            friendlyName: "Exporter-Csv",
+            name: "xlsx-export",
+            friendlyName: "XLSX-EXPORT",
             description: "Export a Table, Data Provider or Query to CSV / XLSX / XLS / HTML / PDF / JSON. Includes Thai date-time formatting, column styling, multi-row merged document headers, watermark and footer.",
             icon: "Download",
             settings: [ {

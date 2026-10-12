@@ -294,6 +294,6 @@ npm run verify
 
 ## 👨‍💻 ผู้พัฒนา
 
-**Author:** 'MR.Thanakrit Yaemsuk ( Kant ) `
+**Author:** MR.Thanakrit Yaemsuk ( Kant )
 
 สร้างขึ้นเพื่อช่วยให้การส่งออกข้อมูลจาก Budibase มีความยืดหยุ่น เป็นมาตรฐาน และรองรับการใช้งานภาษาไทยอย่างสมบูรณ์

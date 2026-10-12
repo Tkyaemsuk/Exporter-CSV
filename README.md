@@ -1,4 +1,4 @@
-# 📤 XLSX-EXPORT — Budibase Component Plugin
+ใน# 📤 XLSX-EXPORT — Budibase Component Plugin
 
 > Plugin สำหรับส่งออกข้อมูลจาก Budibase อย่างเป็นระบบ พร้อม Visual Column Designer การจัดรูปแบบภาษาไทย และการล็อกดีไซน์ไว้ใน Component Settings
 
@@ -294,6 +294,6 @@ npm run verify
 
 ## 👨‍💻 ผู้พัฒนา
 
-**Author:** `-`
+**Author:** 'MR.Thanakrit Yaemsuk ( Kant ) `
 
 สร้างขึ้นเพื่อช่วยให้การส่งออกข้อมูลจาก Budibase มีความยืดหยุ่น เป็นมาตรฐาน และรองรับการใช้งานภาษาไทยอย่างสมบูรณ์

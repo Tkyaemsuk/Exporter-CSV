@@ -1380,6 +1380,19 @@ var plugin = function(e, t, n) {
         const n = null == e ? "" : String(e);
         return -1 !== n.indexOf('"') || -1 !== n.indexOf(t) || -1 !== n.indexOf("\n") || -1 !== n.indexOf("\r") || n !== n.trim() ? '"' + n.replace(/"/g, '""') + '"' : n;
     }
+    function pageFooterText(e) {
+        const t = e || {};
+        return t.startDate || t.docCode ? {
+            left: String(t.startDate || ""),
+            right: String(t.docCode || "")
+        } : null;
+    }
+    function xlsxFooterText(e) {
+        const t = pageFooterText(e);
+        if (!t) return "";
+        const n = e => String(e || "").replace(/&/g, "&&");
+        return "&L" + n(t.left) + "&R" + n(t.right);
+    }
     function ge(e, t) {
         const n = t || {}, a = function(e) {
             return fe[e] || ",";
@@ -2164,7 +2177,7 @@ var plugin = function(e, t, n) {
                     fmtId: b
                 })
             };
-        }), F = n.footer;
+        }), F = n.footer, pageFooter = xlsxFooterText(F);
         let k = 0, S = 0;
         if (F) {
             const e = h.add(Ct({
@@ -2248,14 +2261,8 @@ var plugin = function(e, t, n) {
             $.push('<row r="' + n + '">' + r + "</row>");
         });
         let T = tableHeaderRow + e.body.length;
-        if (F && (F.startDate || F.docCode)) {
-            T += 2;
-            const e = [];
-            e.push('<c r="A' + T + '" s="' + k + '" t="inlineStr"><is><t xml:space="preserve">' + xe(F.startDate || "") + "</t></is></c>"), 
-            s > 1 && e.push('<c r="' + xt(s - 1) + T + '" s="' + S + '" t="inlineStr"><is><t xml:space="preserve">' + xe(F.docCode || "") + "</t></is></c>"), 
-            $.push('<row r="' + T + '">' + e.join("") + "</row>");
-        }
-        const N = n.watermark && n.watermark.bytes ? n.watermark : null, hasDrawing = !!(N || documentImage), nextDataRow = tableHeaderRow + 1, B = vt + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:' + xt(s - 1) + Math.max(T, 1) + '"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="' + tableHeaderRow + '" topLeftCell="A' + nextDataRow + '" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A' + nextDataRow + '" sqref="A' + nextDataRow + '"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' + M + "<sheetData>" + $.join("") + "</sheetData>" + (e.body.length ? '<autoFilter ref="A' + tableHeaderRow + ':' + xt(s - 1) + tableHeaderRow + '"/>' : "") + (z.length ? '<mergeCells count="' + z.length + '">' + z.join("") + "</mergeCells>" : "") + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>' + (hasDrawing ? '<drawing r:id="rId1"/>' : "") + "</worksheet>", Y = vt + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + (v.length ? '<numFmts count="' + v.length + '">' + v.join("") + "</numFmts>" : "") + '<fonts count="' + h.items.length + '">' + h.items.join("") + '</fonts><fills count="' + g.items.length + '">' + g.items.join("") + '</fills><borders count="' + b.items.length + '">' + b.items.join("") + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + x.items.length + '">' + x.items.join("") + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>', O = vt + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' + xe(Fe(n.sheetName)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>', E = {
+        // The document identity belongs in the print footer, not in the data rows.
+        const N = n.watermark && n.watermark.bytes ? n.watermark : null, hasDrawing = !!(N || documentImage), nextDataRow = tableHeaderRow + 1, worksheetFooter = pageFooter ? '<headerFooter><oddFooter>' + xe(pageFooter) + '</oddFooter></headerFooter>' : "", B = vt + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:' + xt(s - 1) + Math.max(T, 1) + '"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="' + tableHeaderRow + '" topLeftCell="A' + nextDataRow + '" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A' + nextDataRow + '" sqref="A' + nextDataRow + '"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' + M + "<sheetData>" + $.join("") + "</sheetData>" + (e.body.length ? '<autoFilter ref="A' + tableHeaderRow + ':' + xt(s - 1) + tableHeaderRow + '"/>' : "") + (z.length ? '<mergeCells count="' + z.length + '">' + z.join("") + "</mergeCells>" : "") + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>' + worksheetFooter + (hasDrawing ? '<drawing r:id="rId1"/>' : "") + "</worksheet>", Y = vt + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + (v.length ? '<numFmts count="' + v.length + '">' + v.join("") + "</numFmts>" : "") + '<fonts count="' + h.items.length + '">' + h.items.join("") + '</fonts><fills count="' + g.items.length + '">' + g.items.join("") + '</fills><borders count="' + b.items.length + '">' + b.items.join("") + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + x.items.length + '">' + x.items.join("") + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>', O = vt + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' + xe(Fe(n.sheetName)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>', E = {
             "_rels/.rels": ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'),
             "xl/workbook.xml": ft(O),
             "xl/_rels/workbook.xml.rels": ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
@@ -2454,7 +2461,7 @@ var plugin = function(e, t, n) {
                         h.push('<Style ss:ID="c' + t + "_" + n + '"><Alignment ss:Horizontal="' + p + '" ss:Vertical="Top"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + Ce(e.color, b) + '"/><Interior ss:Color="' + Ce(e.background, g) + '" ss:Pattern="Solid"/>' + f + "</Style>");
                     });
                 });
-                const g = n.footer;
+                const g = n.footer, pageFooter = xlsxFooterText(g);
                 if (g) {
                     const e = Ce(g.color, "#6B7280"), t = Number(g.fontSize) > 0 ? Number(g.fontSize) : 10;
                     h.push('<Style ss:ID="fL"><Alignment ss:Horizontal="Left" ss:Vertical="Center"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + t + '" ss:Color="' + e + '" ss:Italic="1"/></Style>'), 

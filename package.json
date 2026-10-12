@@ -1,6 +1,6 @@
 {
   "name": "xlsx-export",
-  "version": "1.10.6",
+  "version": "1.10.7",
   "description": "Open-source Budibase 3.4.1 export component with styled document headers, merged rows, conditional colours and component-locked column design JSON",
   "author": "-",
   "license": "MIT",

@@ -2,7 +2,7 @@
 
 > Plugin สำหรับส่งออกข้อมูลจาก Budibase อย่างเป็นระบบ พร้อม Visual Column Designer การจัดรูปแบบภาษาไทย และการล็อกดีไซน์ไว้ใน Component Settings
 
-**Version:** `1.10.6`  
+**Version:** `1.10.7`  
 **Compatibility:** Budibase `v3.4.1`  
 **Runtime:** Svelte `3`  
 **License:** MIT
@@ -13,7 +13,9 @@
 
 `XLSX-EXPORT` เป็น Custom Component Plugin สำหรับ Budibase ที่ช่วยส่งออกข้อมูลจาก **Table, View, Query และ Data Provider** ไปยังไฟล์หลายรูปแบบ โดยผู้พัฒนาสามารถกำหนดชื่อ ลำดับ สี ความกว้าง การจัดตำแหน่ง และรูปแบบข้อมูลของแต่ละคอลัมน์ผ่าน Visual Designer ได้
 
-รุ่น v1.10.6 บังคับให้ Export ใช้ snapshot จาก Designer ที่เปิดอยู่เสมอ ฝังสีที่ตรงเงื่อนไขลงในเซลล์ XLSX จริง และรองรับชื่อสี CSS เช่น `yellow` ใน JSON
+รุ่น v1.10.7 รองรับการอ่านข้อมูลแบบแบ่งหน้าจาก Data Provider จนครบตาม `Max rows` และกำหนด footer ระดับหน้าเอกสาร โดย “วันที่เริ่มใช้งาน” และ “รหัสเอกสาร” จะแสดงคู่กันทุกหน้าของไฟล์ที่พิมพ์หรือส่งออก
+
+รุ่นนี้ยังคงใช้ snapshot จาก Designer ฝังสีที่ตรงเงื่อนไขลงในเซลล์ XLSX จริง และรองรับชื่อสี CSS เช่น `yellow` ใน JSON
 
 ดีไซน์คอลัมน์และส่วนหัวเอกสารถูกจัดเก็บร่วมกันในช่อง `Locked design data` ของ Component จึงติดไปกับ App Definition และไม่สูญหายเมื่อเปลี่ยนเครื่องหรือเปลี่ยนเบราว์เซอร์
 
@@ -30,6 +32,7 @@
 - รองรับ Data Provider
 - ตั้งค่า Sort column และ Sort order ได้
 - กำหนด Page size และจำนวนแถวสูงสุดสำหรับการส่งออกได้
+- อ่านข้อมูลต่อเนื่องทุกหน้าของ Data Provider จนถึงหน้าสุดท้ายหรือถึงจำนวน `Max rows`
 
 ### 📁 รูปแบบไฟล์
 
@@ -97,7 +100,7 @@
 ## 🚀 การติดตั้ง Plugin ใน Budibase
 
 1. เปิดโฟลเดอร์ `release`
-2. เลือกไฟล์ `xlsx-export-1.10.6.tar.gz`
+2. เลือกไฟล์ `xlsx-export-1.10.7.tar.gz`
 3. เปิด Budibase Portal
 4. ไปที่ **Settings → Plugins**
 5. เลือก **Add plugin → File Upload**
@@ -198,7 +201,7 @@ npm run package
 ไฟล์ที่ได้จะอยู่ที่:
 
 ```text
-release/xlsx-export-1.10.6.tar.gz
+release/xlsx-export-1.10.7.tar.gz
 ```
 
 ---
@@ -206,7 +209,7 @@ release/xlsx-export-1.10.6.tar.gz
 ## 🗂️ โครงสร้างโครงการ
 
 ```text
-xlsx-export-v1.10.6-open-source/
+xlsx-export-v1.10.7-open-source/
 ├── src/
 │   └── plugin.js          # Source bundle ที่จัดรูปแบบให้อ่านและแก้ไขได้
 ├── dist/
@@ -214,7 +217,7 @@ xlsx-export-v1.10.6-open-source/
 │   ├── schema.json
 │   └── package.json
 ├── release/
-│   └── xlsx-export-1.10.6.tar.gz
+│   └── xlsx-export-1.10.7.tar.gz
 ├── scripts/
 │   ├── build.mjs          # Build และอัปเดต Schema hash
 │   ├── verify.mjs         # ตรวจสอบความถูกต้องของ Plugin

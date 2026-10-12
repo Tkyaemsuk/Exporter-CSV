@@ -1,4 +1,4 @@
-ใน# 📤 XLSX-EXPORT — Budibase Component Plugin
+## 📤 XLSX-EXPORT — Budibase Component Plugin
 
 > Plugin สำหรับส่งออกข้อมูลจาก Budibase อย่างเป็นระบบ พร้อม Visual Column Designer การจัดรูปแบบภาษาไทย และการล็อกดีไซน์ไว้ใน Component Settings
 

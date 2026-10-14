@@ -1,6 +1,6 @@
 {
   "name": "xlsx-export",
-  "version": "1.10.7",
+  "version": "1.10.9",
   "description": "Open-source Budibase 3.4.1 export component with styled document headers, merged rows, conditional colours and component-locked column design JSON",
   "author": "-",
   "license": "MIT",
@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
-    "verify": "node scripts/verify.mjs && node scripts/test-conditional-export.mjs && node scripts/test-component-export.mjs",
+    "verify": "node scripts/verify.mjs && node scripts/test-conditional-export.mjs && node scripts/test-component-export.mjs && node scripts/test-page-footer.mjs",
     "package": "npm run build && npm run verify && node scripts/package.mjs"
   },
   "devDependencies": {

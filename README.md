@@ -2,7 +2,7 @@
 
 > Plugin สำหรับส่งออกข้อมูลจาก Budibase อย่างเป็นระบบ พร้อม Visual Column Designer การจัดรูปแบบภาษาไทย และการล็อกดีไซน์ไว้ใน Component Settings
 
-**Version:** `1.10.7`  
+**Version:** `1.10.9`  
 **Compatibility:** Budibase `v3.4.1`  
 **Runtime:** Svelte `3`  
 **License:** MIT
@@ -13,7 +13,15 @@
 
 `XLSX-EXPORT` เป็น Custom Component Plugin สำหรับ Budibase ที่ช่วยส่งออกข้อมูลจาก **Table, View, Query และ Data Provider** ไปยังไฟล์หลายรูปแบบ โดยผู้พัฒนาสามารถกำหนดชื่อ ลำดับ สี ความกว้าง การจัดตำแหน่ง และรูปแบบข้อมูลของแต่ละคอลัมน์ผ่าน Visual Designer ได้
 
-รุ่น v1.10.7 รองรับการอ่านข้อมูลแบบแบ่งหน้าจาก Data Provider จนครบตาม `Max rows` และกำหนด footer ระดับหน้าเอกสาร โดย “วันที่เริ่มใช้งาน” และ “รหัสเอกสาร” จะแสดงคู่กันทุกหน้าของไฟล์ที่พิมพ์หรือส่งออก
+รุ่น v1.10.9 เพิ่ม `bookViews/workbookView` และขนาดหน้าต่างใน XLSX เพื่อให้ `sheetView@workbookViewId=0` อ้างอิงได้จริง พร้อมจำกัด footer ไม่เกิน 255 ตัวอักษรรวมคำสั่ง Excel และกรอง control characters หากข้อความยาวเกินจะตัดให้พอดีโดยรักษาเลขหน้าและพื้นที่รหัสเอกสาร
+
+การตรวจสอบ: ทดสอบ ZIP/XML, การอ้างอิง workbook view, footer ภาษาไทย, `&P/&N`, ข้อความยาว, ampersand และปิด footer ผ่านแล้ว สภาพแวดล้อมทดสอบไม่มี Microsoft Excel จึงยังไม่ยืนยันการหาย crash ใน Print Preview บน Windows
+
+ฟังก์ชันที่คงไว้จาก v1.10.8: เพิ่มเลขหน้าตรงกลาง footer ระหว่างวันที่เริ่มใช้งานกับรหัสเอกสาร เช่น `วันที่เริ่มใช้งาน 14/10/2569    1/3    QSM-FM15/7` โดยนับต่อเนื่อง 1/3, 2/3, 3/3 ตามหน้าพิมพ์จริง
+
+HTML/PDF ใช้ CSS page margin boxes และ `counter(page)/counter(pages)` ต้องใช้เบราว์เซอร์ที่รองรับ เช่น Chrome/Edge 131 ขึ้นไป และปิด Headers and footers ของเบราว์เซอร์ในหน้าสั่งพิมพ์ ส่วน XLSX/XLS ใช้ `&P/&N` ของ Excel ซึ่งจะแสดงใน Print Preview/หน้าพิมพ์ HTML บนจอแสดง 1/1 เป็นตัวอย่าง; CSV/TXT/JSON ไม่มีการแบ่งหน้าพิมพ์
+
+พัฒนาต่อจาก v1.10.7 ซึ่งรองรับการอ่านข้อมูลแบบแบ่งหน้าจาก Data Provider จนครบตาม `Max rows` และกำหนด footer ระดับหน้าเอกสาร โดย “วันที่เริ่มใช้งาน” และ “รหัสเอกสาร” จะแสดงคู่กันทุกหน้าของไฟล์ที่พิมพ์หรือส่งออก
 
 รุ่นนี้ยังคงใช้ snapshot จาก Designer ฝังสีที่ตรงเงื่อนไขลงในเซลล์ XLSX จริง และรองรับชื่อสี CSS เช่น `yellow` ใน JSON
 
@@ -100,7 +108,7 @@
 ## 🚀 การติดตั้ง Plugin ใน Budibase
 
 1. เปิดโฟลเดอร์ `release`
-2. เลือกไฟล์ `xlsx-export-1.10.7.tar.gz`
+2. เลือกไฟล์ `xlsx-export-1.10.9.tar.gz`
 3. เปิด Budibase Portal
 4. ไปที่ **Settings → Plugins**
 5. เลือก **Add plugin → File Upload**
@@ -201,7 +209,7 @@ npm run package
 ไฟล์ที่ได้จะอยู่ที่:
 
 ```text
-release/xlsx-export-1.10.7.tar.gz
+release/xlsx-export-1.10.9.tar.gz
 ```
 
 ---
@@ -209,7 +217,7 @@ release/xlsx-export-1.10.7.tar.gz
 ## 🗂️ โครงสร้างโครงการ
 
 ```text
-xlsx-export-v1.10.7-open-source/
+xlsx-export-v1.10.9-open-source/
 ├── src/
 │   └── plugin.js          # Source bundle ที่จัดรูปแบบให้อ่านและแก้ไขได้
 ├── dist/
@@ -217,7 +225,7 @@ xlsx-export-v1.10.7-open-source/
 │   ├── schema.json
 │   └── package.json
 ├── release/
-│   └── xlsx-export-1.10.7.tar.gz
+│   └── xlsx-export-1.10.9.tar.gz
 ├── scripts/
 │   ├── build.mjs          # Build และอัปเดต Schema hash
 │   ├── verify.mjs         # ตรวจสอบความถูกต้องของ Plugin

@@ -1152,7 +1152,9 @@ var plugin = function(e, t, n) {
             o(0, t[n].bodyColor = a.target.value, s), v(s);
         }, (e, t, n) => {
             o(0, t[n].bodyBg = "", s), o(0, t[n].bodyColor = "", s), v(s);
-        }, e => w(e.id, -1), e => w(e.id, 1), e => x(e.id), e => y(e.id), () => f("close"), () => f("export"), () => f("close"), () => f("headerdesign"), () => f("conditionaldesign") ];
+        }, e => w(e.id, -1), e => w(e.id, 1), e => x(e.id), e => y(e.id), () => f("close"), () => f("export", {
+            columns: M(s)
+        }), () => f("close"), () => f("headerdesign"), () => f("conditionaldesign") ];
     }
     Y('.ec-overlay.svelte-lgwuc9.svelte-lgwuc9{position:fixed;inset:0;background:rgba(15, 23, 42, 0.45);display:flex;align-items:center;justify-content:center;z-index:999999;padding:24px;font-family:"Sarabun", "Noto Sans Thai", Tahoma, system-ui, sans-serif}.ec-modal.svelte-lgwuc9.svelte-lgwuc9{background:#fff;color:#111827;width:min(1240px, 96vw);max-height:88vh;border-radius:10px;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0, 0, 0, 0.3);overflow:hidden}.ec-head.svelte-lgwuc9.svelte-lgwuc9{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e5e7eb;background:linear-gradient(#f9fafb, #f1f5f9)}.ec-sub.svelte-lgwuc9.svelte-lgwuc9{display:block;font-size:12px;color:#6b7280;margin-top:2px}.ec-x.svelte-lgwuc9.svelte-lgwuc9{border:none;background:transparent;font-size:22px;line-height:1;cursor:pointer;color:#6b7280;padding:2px 8px;border-radius:6px}.ec-x.svelte-lgwuc9.svelte-lgwuc9:hover{background:#e5e7eb;color:#111827}.ec-toolbar.svelte-lgwuc9.svelte-lgwuc9,.ec-foot.svelte-lgwuc9.svelte-lgwuc9{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fbfdff;border-bottom:1px solid #eef2f7;flex-wrap:wrap}.ec-foot.svelte-lgwuc9.svelte-lgwuc9{border-bottom:none;border-top:1px solid #e5e7eb;background:#f9fafb}.ec-spacer.svelte-lgwuc9.svelte-lgwuc9{flex:1}.ec-toast.svelte-lgwuc9.svelte-lgwuc9{font-size:12px;color:#15803d;font-weight:600}.ec-btn.svelte-lgwuc9.svelte-lgwuc9{border:1px solid #d1d5db;background:#fff;color:#1f2937;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}.ec-btn.svelte-lgwuc9.svelte-lgwuc9:hover{background:#f3f4f6}.ec-primary.svelte-lgwuc9.svelte-lgwuc9{background:#16a34a;border-color:#16a34a;color:#fff}.ec-primary.svelte-lgwuc9.svelte-lgwuc9:hover{background:#15803d}.ec-danger.svelte-lgwuc9.svelte-lgwuc9{color:#dc2626}.ec-danger.svelte-lgwuc9.svelte-lgwuc9:hover{background:#fee2e2}.ec-body.svelte-lgwuc9.svelte-lgwuc9{padding:12px 16px 16px;overflow:auto}.ec-grid.svelte-lgwuc9.svelte-lgwuc9{display:grid;grid-template-columns:28px 44px minmax(120px, 1.3fr) minmax(110px, 1fr) 92px minmax(120px, 1fr) 96px 62px 68px 96px 96px 108px;gap:6px;align-items:center}.ec-grid-head.svelte-lgwuc9.svelte-lgwuc9{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;padding:4px 0 6px;position:sticky;top:0;background:#fff;z-index:2}.ec-grid-row.svelte-lgwuc9.svelte-lgwuc9{padding:3px 0}.ec-letter.svelte-lgwuc9.svelte-lgwuc9{text-align:center;font-weight:700;color:#2563eb;font-size:11px}.ec-check.svelte-lgwuc9.svelte-lgwuc9{justify-self:center;width:15px;height:15px;cursor:pointer}.ec-input.svelte-lgwuc9.svelte-lgwuc9{width:100%;box-sizing:border-box;padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;background:#fff;color:#111827;font-family:inherit}.ec-input.svelte-lgwuc9.svelte-lgwuc9:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37, 99, 235, 0.15)}.ec-narrow.svelte-lgwuc9.svelte-lgwuc9{text-align:center}.ec-colors.svelte-lgwuc9.svelte-lgwuc9,.ec-ops.svelte-lgwuc9.svelte-lgwuc9{display:flex;gap:2px;align-items:center;justify-content:center}.ec-colors.svelte-lgwuc9 input[type="color"].svelte-lgwuc9{width:26px;height:24px;padding:0;border:1px solid #d1d5db;border-radius:4px;background:none;cursor:pointer}.ec-mini.svelte-lgwuc9.svelte-lgwuc9{border:1px solid #e5e7eb;background:#f9fafb;border-radius:4px;width:23px;height:23px;cursor:pointer;font-size:10px;color:#374151;padding:0;line-height:1}.ec-mini.svelte-lgwuc9.svelte-lgwuc9:hover{background:#eef2f7}.ec-empty.svelte-lgwuc9.svelte-lgwuc9{padding:22px;text-align:center;color:#6b7280;border:1px dashed #d1d5db;border-radius:8px;margin:8px 0;font-size:13px}.ec-preview.svelte-lgwuc9.svelte-lgwuc9{margin-top:16px}.ec-preview-label.svelte-lgwuc9.svelte-lgwuc9{font-size:12px;color:#6b7280;margin-bottom:6px}.ec-table-wrap.svelte-lgwuc9.svelte-lgwuc9{overflow:auto;border:1px solid #cbd5e1;border-radius:8px;max-height:300px}.ec-table.svelte-lgwuc9.svelte-lgwuc9{border-collapse:collapse;font-size:12px;min-width:100%}.ec-table.svelte-lgwuc9 th.svelte-lgwuc9,.ec-table.svelte-lgwuc9 td.svelte-lgwuc9{border:1px solid #d7dde5;padding:5px 9px;white-space:nowrap;text-align:left}.ec-table.svelte-lgwuc9 thead th.svelte-lgwuc9{position:sticky;top:0;z-index:1;font-weight:700}.ec-norows.svelte-lgwuc9.svelte-lgwuc9{color:#9ca3af;text-align:center;font-style:italic}');
     class se extends t.SvelteComponent {
@@ -1378,6 +1380,44 @@ var plugin = function(e, t, n) {
         const n = null == e ? "" : String(e);
         return -1 !== n.indexOf('"') || -1 !== n.indexOf(t) || -1 !== n.indexOf("\n") || -1 !== n.indexOf("\r") || n !== n.trim() ? '"' + n.replace(/"/g, '""') + '"' : n;
     }
+    function pageFooterText(e) {
+        const t = e || {};
+        return t.startDate || t.docCode ? {
+            left: String(t.startDate || ""),
+            right: String(t.docCode || "")
+        } : null;
+    }
+    function xlsxFooterText(e) {
+        const t = pageFooterText(e);
+        if (!t) return "";
+        // Excel limits the complete header/footer string to 255 characters,
+        // including section/page codes. Escape ampersands without cutting tokens.
+        const clean = value => Array.from(String(value || "").replace(/[\u0000-\u001f\u007f]/g, " ")).map(value => value === "&" ? "&&" : value);
+        const left = clean(t.left), right = clean(t.right), middle = "&C&P/&N&R";
+        const budget = 255 - 2 - middle.length;
+        const take = (tokens, limit) => {
+            let text = "";
+            for (const token of tokens) {
+                if (text.length + token.length > limit) break;
+                text += token;
+            }
+            return text;
+        };
+        const rightText = take(right, left.length ? Math.floor(budget / 2) : budget);
+        return "&L" + take(left, budget - rightText.length) + middle + rightText;
+    }
+    // Use the print engine's counters: one number per physical page,
+    // including pages created by wrapped rows or horizontal pagination.
+    function printFooterCss(e) {
+        const t = pageFooterText(e);
+        if (!t) return "";
+        const cssText = value => '"' + String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/[\n\r\f]/g, " ") + '"';
+        const style = "font-family:inherit;font-size:" + (Number(e.fontSize) > 0 ? Number(e.fontSize) : 10) + "pt;color:" + ve(e.color, "#6B7280") + ";";
+        return "@page{@bottom-left{content:" + cssText(t.left) + ";" + style + "text-align:left}" +
+            '@bottom-center{content:counter(page) "/" counter(pages);' + style + "text-align:center}" +
+            "@bottom-right{content:" + cssText(t.right) + ";" + style + "text-align:right}}" +
+            "@media print{body{padding:0}.ec-footer{display:none}}";
+    }
     function ge(e, t) {
         const n = t || {}, a = function(e) {
             return fe[e] || ",";
@@ -1407,7 +1447,30 @@ var plugin = function(e, t, n) {
         return String(null == e ? "" : e).replace(ye, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
     }
     function we(e) {
-        const t = String(null == e ? "" : e).trim(), n = /^#?([0-9a-fA-F]{6})$/.exec(t);
+        const namedColors = {
+            black: "000000",
+            white: "FFFFFF",
+            red: "FF0000",
+            green: "008000",
+            blue: "0000FF",
+            yellow: "FFFF00",
+            orange: "FFA500",
+            purple: "800080",
+            pink: "FFC0CB",
+            gray: "808080",
+            grey: "808080",
+            cyan: "00FFFF",
+            aqua: "00FFFF",
+            lime: "00FF00",
+            navy: "000080",
+            teal: "008080",
+            maroon: "800000",
+            olive: "808000",
+            silver: "C0C0C0"
+        };
+        const t = String(null == e ? "" : e).trim(), named = namedColors[t.toLowerCase()];
+        if (named) return named;
+        const n = /^#?([0-9a-fA-F]{6})$/.exec(t);
         if (n) return n[1].toUpperCase();
         const a = /^#?([0-9a-fA-F]{3})$/.exec(t);
         if (a) {
@@ -2139,7 +2202,7 @@ var plugin = function(e, t, n) {
                     fmtId: b
                 })
             };
-        }), F = n.footer;
+        }), F = n.footer, pageFooter = xlsxFooterText(F);
         let k = 0, S = 0;
         if (F) {
             const e = h.add(Ct({
@@ -2199,7 +2262,7 @@ var plugin = function(e, t, n) {
         const workbookFontName = o, workbookFontSize = r;
         e.body.forEach((e, t) => {
             const n = tableHeaderRow + t + 1, o = a.stripeEnabled && t % 2 == 1, r = e.map((e, t) => {
-                const a = _[t], conditional = resolveConditionalStyle(l[t], e.raw);
+                const a = _[t], conditional = e.conditionalStyle || resolveConditionalStyle(l[t], e.raw);
                 let styleId = a ? o ? a.stripe : a.body : 0;
                 if (conditional && l[t]) {
                     const column = l[t], fontId = h.add(Ct({
@@ -2223,14 +2286,8 @@ var plugin = function(e, t, n) {
             $.push('<row r="' + n + '">' + r + "</row>");
         });
         let T = tableHeaderRow + e.body.length;
-        if (F && (F.startDate || F.docCode)) {
-            T += 2;
-            const e = [];
-            e.push('<c r="A' + T + '" s="' + k + '" t="inlineStr"><is><t xml:space="preserve">' + xe(F.startDate || "") + "</t></is></c>"), 
-            s > 1 && e.push('<c r="' + xt(s - 1) + T + '" s="' + S + '" t="inlineStr"><is><t xml:space="preserve">' + xe(F.docCode || "") + "</t></is></c>"), 
-            $.push('<row r="' + T + '">' + e.join("") + "</row>");
-        }
-        const N = n.watermark && n.watermark.bytes ? n.watermark : null, hasDrawing = !!(N || documentImage), nextDataRow = tableHeaderRow + 1, B = vt + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:' + xt(s - 1) + Math.max(T, 1) + '"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="' + tableHeaderRow + '" topLeftCell="A' + nextDataRow + '" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A' + nextDataRow + '" sqref="A' + nextDataRow + '"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' + M + "<sheetData>" + $.join("") + "</sheetData>" + (e.body.length ? '<autoFilter ref="A' + tableHeaderRow + ':' + xt(s - 1) + tableHeaderRow + '"/>' : "") + (z.length ? '<mergeCells count="' + z.length + '">' + z.join("") + "</mergeCells>" : "") + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>' + (hasDrawing ? '<drawing r:id="rId1"/>' : "") + "</worksheet>", Y = vt + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + (v.length ? '<numFmts count="' + v.length + '">' + v.join("") + "</numFmts>" : "") + '<fonts count="' + h.items.length + '">' + h.items.join("") + '</fonts><fills count="' + g.items.length + '">' + g.items.join("") + '</fills><borders count="' + b.items.length + '">' + b.items.join("") + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + x.items.length + '">' + x.items.join("") + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>', O = vt + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' + xe(Fe(n.sheetName)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>', E = {
+        // The document identity belongs in the print footer, not in the data rows.
+        const N = n.watermark && n.watermark.bytes ? n.watermark : null, hasDrawing = !!(N || documentImage), nextDataRow = tableHeaderRow + 1, worksheetFooter = pageFooter ? '<headerFooter><oddFooter>' + xe(pageFooter) + '</oddFooter></headerFooter>' : "", B = vt + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="A1:' + xt(s - 1) + Math.max(T, 1) + '"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="' + tableHeaderRow + '" topLeftCell="A' + nextDataRow + '" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A' + nextDataRow + '" sqref="A' + nextDataRow + '"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' + M + "<sheetData>" + $.join("") + "</sheetData>" + (e.body.length ? '<autoFilter ref="A' + tableHeaderRow + ':' + xt(s - 1) + tableHeaderRow + '"/>' : "") + (z.length ? '<mergeCells count="' + z.length + '">' + z.join("") + "</mergeCells>" : "") + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>' + worksheetFooter + (hasDrawing ? '<drawing r:id="rId1"/>' : "") + "</worksheet>", Y = vt + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + (v.length ? '<numFmts count="' + v.length + '">' + v.join("") + "</numFmts>" : "") + '<fonts count="' + h.items.length + '">' + h.items.join("") + '</fonts><fills count="' + g.items.length + '">' + g.items.join("") + '</fills><borders count="' + b.items.length + '">' + b.items.join("") + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + x.items.length + '">' + x.items.join("") + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>', O = vt + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="24000" windowHeight="15000" activeTab="0"/></bookViews><sheets><sheet name="' + xe(Fe(n.sheetName)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>', E = {
             "_rels/.rels": ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'),
             "xl/workbook.xml": ft(O),
             "xl/_rels/workbook.xml.rels": ft(vt + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
@@ -2429,7 +2486,7 @@ var plugin = function(e, t, n) {
                         h.push('<Style ss:ID="c' + t + "_" + n + '"><Alignment ss:Horizontal="' + p + '" ss:Vertical="Top"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + r + '" ss:Color="' + Ce(e.color, b) + '"/><Interior ss:Color="' + Ce(e.background, g) + '" ss:Pattern="Solid"/>' + f + "</Style>");
                     });
                 });
-                const g = n.footer;
+                const g = n.footer, pageFooter = xlsxFooterText(g);
                 if (g) {
                     const e = Ce(g.color, "#6B7280"), t = Number(g.fontSize) > 0 ? Number(g.fontSize) : 10;
                     h.push('<Style ss:ID="fL"><Alignment ss:Horizontal="Left" ss:Vertical="Center"/><Font ss:FontName="' + xe(o) + '" ss:Size="' + t + '" ss:Color="' + e + '" ss:Italic="1"/></Style>'), 
@@ -2444,7 +2501,7 @@ var plugin = function(e, t, n) {
                     return '<Column ss:Index="' + (n + 1) + '" ss:AutoFitWidth="0" ss:Width="' + Math.round(7 * a * .75) + '"/>';
                 }).join(""), v = '<Row ss:Height="22">' + e.header.map((e, t) => '<Cell ss:StyleID="h' + t + '"><Data ss:Type="String">' + xe(e) + "</Data></Cell>").join("") + "</Row>", y = e.body.map((e, t) => {
                     const n = a.stripeEnabled && t % 2 == 1 ? "s" : "d", o = e.map((e, t) => {
-                        const a = null != e.number && isFinite(e.number), o = a ? "Number" : "String", r = a ? e.number : xe(e.text), conditional = resolveConditionalStyle(l[t], e.raw), styleId = conditional ? "c" + t + "_" + conditional.index : n + t;
+                        const a = null != e.number && isFinite(e.number), o = a ? "Number" : "String", r = a ? e.number : xe(e.text), conditional = e.conditionalStyle || resolveConditionalStyle(l[t], e.raw), styleId = conditional ? "c" + t + "_" + conditional.index : n + t;
                         return '<Cell ss:StyleID="' + styleId + '"><Data ss:Type="' + o + '">' + r + "</Data></Cell>";
                     }).join("");
                     return "<Row>" + o + "</Row>";
@@ -2457,7 +2514,7 @@ var plugin = function(e, t, n) {
                     x += "</Row>";
                 }
                 const frozenRows = documentRows.length + 1;
-                return [ '<?xml version="1.0" encoding="UTF-8"?>', '<?mso-application progid="Excel.Sheet"?>', '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:o="urn:schemas-microsoft-com:office:office"', ' xmlns:x="urn:schemas-microsoft-com:office:excel"', ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:html="http://www.w3.org/TR/REC-html40">', "<Styles>" + h.join("") + "</Styles>", '<Worksheet ss:Name="' + xe(Fe(n.sheetName)) + '">', "<Table>", b, documentHeaderXml, v, y, x, "</Table>", '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">', "<FreezePanes/><FrozenNoSplit/><SplitHorizontal>" + frozenRows + "</SplitHorizontal>", "<TopRowBottomPane>" + frozenRows + "</TopRowBottomPane><ActivePane>2</ActivePane>", "</WorksheetOptions>", "</Worksheet>", "</Workbook>" ].join("\n");
+                return [ '<?xml version="1.0" encoding="UTF-8"?>', '<?mso-application progid="Excel.Sheet"?>', '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:o="urn:schemas-microsoft-com:office:office"', ' xmlns:x="urn:schemas-microsoft-com:office:excel"', ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"', ' xmlns:html="http://www.w3.org/TR/REC-html40">', "<Styles>" + h.join("") + "</Styles>", '<Worksheet ss:Name="' + xe(Fe(n.sheetName)) + '">', "<Table>", b, documentHeaderXml, v, y, x, "</Table>", '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">', "<FreezePanes/><FrozenNoSplit/><SplitHorizontal>" + frozenRows + "</SplitHorizontal>", "<TopRowBottomPane>" + frozenRows + "</TopRowBottomPane><ActivePane>2</ActivePane>", (pageFooter ? '<PageSetup><Footer x:Data="' + xe(pageFooter) + '"/></PageSetup>' : ""), "</WorksheetOptions>", "</Worksheet>", "</Workbook>" ].join("\n");
             }(e, {
                 sheetName: a.sheetName,
                 fontFamily: a.fontFamily,
@@ -2502,14 +2559,14 @@ var plugin = function(e, t, n) {
                 e.align && "left" !== e.align && o.push("text-align:" + e.align), e.width && o.push("width:" + 8 * e.width + "px"), 
                 o.length && b.push(".ec-data-table tbody td:nth-child(" + n + "){" + o.join(";") + "}");
             });
-            const v = a.stripeEnabled ? ".ec-data-table tbody tr:nth-child(even) td{background:" + u + "}" : "", y = h ? [ ".ec-watermark{", "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);", "width:" + (Number(h.size) > 0 ? Number(h.size) : 55) + "%;", "opacity:" + (Number(h.opacity) >= 0 ? Number(h.opacity) : 12) / 100 + ";", "z-index:0;pointer-events:none;user-select:none;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", ".ec-watermark img{width:100%;height:auto;display:block}" ].join("") : "", x = g ? [ ".ec-footer{", "position:fixed;bottom:0;left:0;right:0;", "display:flex;justify-content:space-between;align-items:flex-end;gap:16px;", "padding:6px 0;", "font-size:" + (Number(g.fontSize) > 0 ? Number(g.fontSize) : 10) + "pt;", "color:" + ve(g.color, "#6B7280") + ";", "background:transparent;z-index:2;", "}", ".ec-footer .ec-right{text-align:right}" ].join("") : "", w = [ "@page{size:A4 landscape;margin:14mm 12mm 18mm}", "*{box-sizing:border-box}", "html,body{margin:0;padding:0}", "body{", "font-family:'" + o + "','Sarabun','TH Sarabun New','Noto Sans Thai',Tahoma,sans-serif;", "font-size:" + r + "pt;color:" + c + ";background:#fff;", "padding:14mm 12mm 18mm;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", y, ".ec-sheet{position:relative;z-index:1}", ".ec-document-header{position:relative;z-index:2;margin:0 0 10px}", ".ec-document-header-image{display:flex}", ".ec-document-header-image img{height:auto;max-width:100%;display:block}", ".ec-document-header table{table-layout:fixed}", "table{border-collapse:collapse;width:100%;table-layout:auto}", "thead{display:table-header-group}", "tfoot{display:table-footer-group}", "tr{page-break-inside:avoid;break-inside:avoid}", "th,td{border:1px solid " + p + ";padding:4px 8px;vertical-align:top;word-break:break-word}", ".ec-data-table thead th{", "background:" + s + ";color:" + i + ";", "text-align:" + m + ";", "font-weight:" + (!1 === a.headerBold ? "400" : "700") + ";", "}", ".ec-data-table tbody td{background:" + d + ";color:" + c + "}", v, b.join(""), x ].join(""), C = e.header.map(e => "<th>" + be(e) + "</th>").join(""), _ = e.body.map((e, t) => "<tr>" + e.map((e, n) => { const conditional = resolveConditionalStyle(f[n], e.raw), styles = []; return conditional && conditional.background && styles.push("background:" + conditional.background), conditional && conditional.color && styles.push("color:" + conditional.color), '<td' + (styles.length ? ' style="' + be(styles.join(";")) + '"' : "") + ">" + be(e.text) + "</td>"; }).join("") + "</tr>").join(""), documentHeaderHtml = documentHeader ? [ '<div class="ec-document-header">', documentHeader.image && documentHeader.image.dataUrl ? '<div class="ec-document-header-image" style="justify-content:' + ("right" === documentHeader.imagePosition ? "flex-end" : "center" === documentHeader.imagePosition ? "center" : "flex-start") + ";margin-bottom:" + (Number(documentHeader.imageGap) || 0) + 'px"><img src="' + be(documentHeader.image.dataUrl) + '" alt="" style="width:' + (Number(documentHeader.imageWidth) || 120) + 'px"></div>' : "", documentHeader.rows && documentHeader.rows.length ? '<table><tbody>' + documentHeader.rows.map(e => '<tr style="height:' + (Number(e.height) || 24) + 'px">' + e.cells.map(e => '<td colspan="' + (Number(e.colspan) || 1) + '" style="' + be(documentHeaderCellStyle(e)) + '">' + be(e.text) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" : "", "</div>" ].join("") : "", F = [];
+            const v = a.stripeEnabled ? ".ec-data-table tbody tr:nth-child(even) td{background:" + u + "}" : "", y = h ? [ ".ec-watermark{", "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);", "width:" + (Number(h.size) > 0 ? Number(h.size) : 55) + "%;", "opacity:" + (Number(h.opacity) >= 0 ? Number(h.opacity) : 12) / 100 + ";", "z-index:0;pointer-events:none;user-select:none;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", ".ec-watermark img{width:100%;height:auto;display:block}" ].join("") : "", x = g ? [ ".ec-footer{", "position:fixed;bottom:0;left:0;right:0;", "display:flex;justify-content:space-between;align-items:flex-end;gap:16px;", "padding:6px 0;", "font-size:" + (Number(g.fontSize) > 0 ? Number(g.fontSize) : 10) + "pt;", "color:" + ve(g.color, "#6B7280") + ";", "background:transparent;z-index:2;", "}", ".ec-footer>div{flex:1}", ".ec-footer .ec-page{text-align:center}", ".ec-footer .ec-right{text-align:right}" ].join("") : "", w = [ "@page{size:A4 landscape;margin:14mm 12mm 18mm}", "*{box-sizing:border-box}", "html,body{margin:0;padding:0}", "body{", "font-family:'" + o + "','Sarabun','TH Sarabun New','Noto Sans Thai',Tahoma,sans-serif;", "font-size:" + r + "pt;color:" + c + ";background:#fff;", "padding:14mm 12mm 18mm;", "-webkit-print-color-adjust:exact;print-color-adjust:exact;", "}", y, ".ec-sheet{position:relative;z-index:1}", ".ec-document-header{position:relative;z-index:2;margin:0 0 10px}", ".ec-document-header-image{display:flex}", ".ec-document-header-image img{height:auto;max-width:100%;display:block}", ".ec-document-header table{table-layout:fixed}", "table{border-collapse:collapse;width:100%;table-layout:auto}", "thead{display:table-header-group}", "tfoot{display:table-footer-group}", "tr{page-break-inside:avoid;break-inside:avoid}", "th,td{border:1px solid " + p + ";padding:4px 8px;vertical-align:top;word-break:break-word}", ".ec-data-table thead th{", "background:" + s + ";color:" + i + ";", "text-align:" + m + ";", "font-weight:" + (!1 === a.headerBold ? "400" : "700") + ";", "}", ".ec-data-table tbody td{background:" + d + ";color:" + c + "}", v, b.join(""), x, printFooterCss(g) ].join(""), C = e.header.map(e => "<th>" + be(e) + "</th>").join(""), _ = e.body.map((e, t) => "<tr>" + e.map((e, n) => { const conditional = e.conditionalStyle || resolveConditionalStyle(f[n], e.raw), styles = []; return conditional && conditional.background && styles.push("background:" + conditional.background), conditional && conditional.color && styles.push("color:" + conditional.color), '<td' + (styles.length ? ' style="' + be(styles.join(";")) + '"' : "") + ">" + be(e.text) + "</td>"; }).join("") + "</tr>").join(""), documentHeaderHtml = documentHeader ? [ '<div class="ec-document-header">', documentHeader.image && documentHeader.image.dataUrl ? '<div class="ec-document-header-image" style="justify-content:' + ("right" === documentHeader.imagePosition ? "flex-end" : "center" === documentHeader.imagePosition ? "center" : "flex-start") + ";margin-bottom:" + (Number(documentHeader.imageGap) || 0) + 'px"><img src="' + be(documentHeader.image.dataUrl) + '" alt="" style="width:' + (Number(documentHeader.imageWidth) || 120) + 'px"></div>' : "", documentHeader.rows && documentHeader.rows.length ? '<table><tbody>' + documentHeader.rows.map(e => '<tr style="height:' + (Number(e.height) || 24) + 'px">' + e.cells.map(e => '<td colspan="' + (Number(e.colspan) || 1) + '" style="' + be(documentHeaderCellStyle(e)) + '">' + be(e.text) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" : "", "</div>" ].join("") : "", F = [];
             return F.push("<!DOCTYPE html>"), F.push('<html lang="' + be(n.lang || "th") + '">'), 
             F.push("<head>"), F.push('<meta charset="utf-8">'), F.push('<meta name="viewport" content="width=device-width,initial-scale=1">'), 
             F.push("<title>" + be(l) + "</title>"), F.push("<style>" + w + "</style>"), F.push("</head>"), 
             F.push("<body>"), h && h.dataUrl && F.push('<div class="ec-watermark"><img src="' + be(h.dataUrl) + '" alt=""></div>'), 
             F.push('<div class="ec-sheet">'), documentHeaderHtml && F.push(documentHeaderHtml), F.push('<table class="ec-data-table">'), F.push("<thead><tr>" + C + "</tr></thead>"), 
             F.push("<tbody>" + _ + "</tbody>"), F.push("</table>"), F.push("</div>"), g && (g.startDate || g.docCode) && (F.push('<div class="ec-footer">'), 
-            F.push('<div class="ec-left">' + be(g.startDate || "") + "</div>"), F.push('<div class="ec-right">' + be(g.docCode || "") + "</div>"), 
+            F.push('<div class="ec-left">' + be(g.startDate || "") + "</div>"), F.push('<div class="ec-page">1/1</div>'), F.push('<div class="ec-right">' + be(g.docCode || "") + "</div>"), 
             F.push("</div>")), F.push("</body></html>"), F.join("\n");
         }(e, {
             title: a.title || a.fileName,
@@ -2890,10 +2947,10 @@ var plugin = function(e, t, n) {
             }
             o(9, tt = !0), vt(r("saved"));
         }
-        async function yt(e) {
+        async function yt(e, t) {
             if (nt) return;
             o(17, lt = !1);
-            const t = e || rt || de || "csv";
+            const n = e || rt || de || "csv";
             o(15, nt = !0), o(16, at = r("exporting"));
             try {
                 const e = await async function() {
@@ -2927,7 +2984,7 @@ var plugin = function(e, t, n) {
                         if (i(r && r.rows || []), n.length === t) break;
                     }
                     return n;
-                }(), n = e.slice(0, Math.max(1, Number(L) || 1e4)), a = b.length ? b : F(_(u, n, J), u);
+                }(), rowData = e.slice(0, Math.max(1, Number(L) || 1e4)), a = t && t.length ? M(t) : et.length ? M(et) : b.length ? M(b) : F(_(u, rowData, J), u);
                 if (!a.length) return void bt(r("noData"));
                 const o = function(e, t, n) {
                     const a = function(e) {
@@ -2935,22 +2992,25 @@ var plugin = function(e, t, n) {
                     }(e);
                     return {
                         header: a.map(e => null != e.header && "" !== e.header ? e.header : C(e.field)),
-                        body: (t || []).map(e => a.map(t => B(t, e, n))),
+                        body: (t || []).map(e => a.map(t => {
+                            const a = B(t, e, n);
+                            return a.conditionalStyle = resolveConditionalStyle(t, a.raw), a;
+                        })),
                         columns: a
                     };
-                }(a, n, k);
+                }(a, rowData, k);
                 if (!o.body.length) return void bt(r("noRows"));
-                let l = null;
-                Fe && -1 !== [ "xlsx", "html", "pdf" ].indexOf(t) && (l = await me(Fe), l ? (l.opacity = ke, 
-                l.size = Se) : vt(r("watermarkFailed")));
+                let watermark = null;
+                Fe && -1 !== [ "xlsx", "html", "pdf" ].indexOf(n) && (watermark = await me(Fe), watermark ? (watermark.opacity = ke, 
+                watermark.size = Se) : vt(r("watermarkFailed")));
                 let documentHeader = null;
                 const headerRows = parseDocumentHeaderRows(currentHeaderRows(), o.columns.length), hasDocumentHeader = headerRows.length > 0;
-                if (hasDocumentHeader && -1 !== [ "xlsx", "xls", "html", "pdf" ].indexOf(t)) {
+                if (hasDocumentHeader && -1 !== [ "xlsx", "xls", "html", "pdf" ].indexOf(n)) {
                     documentHeader = {
                         rows: headerRows
                     };
                 }
-                const i = await Bt(o, t, {
+                const exportResult = await Bt(o, n, {
                     fileName: le,
                     appendTimestamp: se,
                     timezone: q,
@@ -2963,16 +3023,16 @@ var plugin = function(e, t, n) {
                     fontSize: _e,
                     style: S,
                     footer: gt(),
-                    watermark: l,
+                    watermark: watermark,
                     documentHeader: documentHeader,
                     title: le
                 });
                 vt(r("exported", {
-                    n: i.rowCount
+                    n: exportResult.rowCount
                 })), "function" == typeof Le && Le({
-                    rowCount: i.rowCount,
-                    fileName: i.fileName,
-                    format: i.format
+                    rowCount: exportResult.rowCount,
+                    fileName: exportResult.fileName,
+                    format: exportResult.format
                 });
             } catch (e) {
                 bt(e && e.message || String(e));
@@ -3087,7 +3147,7 @@ var plugin = function(e, t, n) {
         }, xt, function(e) {
             if (!lt) return;
             e.target.closest && e.target.closest(".ec-format") || o(17, lt = !1);
-        }, H, P, A, j, V, R, L, U, W, J, Z, q, G, Q, K, ee, te, ne, oe, re, le, se, de, ue, pe, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De, Me, $e, Te, ze, Ne, Be, Ye, Ie, He, Pe, Ae, Le, Ue, rt, st, it, ct, s, d, u, w, x, f, g, m, i, I, () => yt(), e => xt(e.value), () => yt(), () => o(14, Ke = !1), showDocumentHeader, documentHeaderImage, documentHeaderImagePosition, documentHeaderImageWidth, documentHeaderRows, function() {
+        }, H, P, A, j, V, R, L, U, W, J, Z, q, G, Q, K, ee, te, ne, oe, re, le, se, de, ue, pe, fe, he, ge, be, ve, ye, xe, we, Ce, _e, Fe, ke, Se, De, Me, $e, Te, ze, Ne, Be, Ye, Ie, He, Pe, Ae, Le, Ue, rt, st, it, ct, s, d, u, w, x, f, g, m, i, I, () => yt(), e => xt(e.value), e => yt(null, e && e.detail && e.detail.columns), () => o(14, Ke = !1), showDocumentHeader, documentHeaderImage, documentHeaderImagePosition, documentHeaderImageWidth, documentHeaderRows, function() {
             const e = (et.length ? et : b || []).filter(e => !1 !== e.include).length || p.length || 1;
             openDocumentHeaderDesigner({
                 rows: currentHeaderRows(),
@@ -3182,7 +3242,7 @@ var plugin = function(e, t, n) {
             }, null, [ -1, -1, -1, -1, -1 ]);
         }
     }
-    var Xt = "xlsx-export", qt = "1.10.1";
+    var Xt = "xlsx-export", qt = "1.10.9";
     function Gt(e) {
         let n;
         const a = e[7].default, o = t.create_slot(a, e, e[6], null);
